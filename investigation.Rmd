@@ -30,7 +30,17 @@ student_data <- read_rds("data/student_data.rds")
 ```
 
 ``` {r}
-student_means <- student_data %>% group_by(year, country) %>% summarize(across(where(is.numeric), mean, na.rm = TRUE)) %>% left_join(countrycode) %>% relocate(country_name, .before = country)
+# A better code which only shows the mean scores.
+student_means <- student_data %>% 
+  group_by(year, country) %>%
+  summarise(
+    math_mean = mean(math, na.rm = TRUE),
+    read_mean = mean(read, na.rm = TRUE),
+    science_mean = mean(science, na.rm = TRUE),
+    n = n()
+    ) %>% 
+  left_join(countrycode) %>% 
+  relocate(country_name, .before = country)
 student_means
 ```
 

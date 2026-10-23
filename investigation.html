@@ -371,19 +371,17 @@ library(learningtower)
 # Add any other libraries here</code></pre>
 <pre class="r"><code># load your data 
 student_data &lt;- read_rds(&quot;data/student_data.rds&quot;)</code></pre>
-<pre class="r"><code>student_means &lt;- student_data %&gt;% group_by(year, country) %&gt;% summarize(across(where(is.numeric), mean, na.rm = TRUE)) %&gt;% left_join(countrycode) %&gt;% relocate(country_name, .before = country)</code></pre>
-<pre><code>## Warning: There was 1 warning in `summarize()`.
-## ℹ In argument: `across(where(is.numeric), mean, na.rm = TRUE)`.
-## ℹ In group 1: `year = 2000`, `country = &quot;ALB&quot;`.
-## Caused by warning:
-## ! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
-## Supply arguments directly to `.fns` through an anonymous function instead.
-## 
-##   # Previously
-##   across(a:b, mean, na.rm = TRUE)
-## 
-##   # Now
-##   across(a:b, \(x) mean(x, na.rm = TRUE))</code></pre>
+<pre class="r"><code># A better code which only shows the mean scores.
+student_means &lt;- student_data %&gt;% 
+  group_by(year, country) %&gt;%
+  summarise(
+    math_mean = mean(math, na.rm = TRUE),
+    read_mean = mean(read, na.rm = TRUE),
+    science_mean = mean(science, na.rm = TRUE),
+    n = n()
+    ) %&gt;% 
+  left_join(countrycode) %&gt;% 
+  relocate(country_name, .before = country)</code></pre>
 <pre><code>## `summarise()` has regrouped the output.
 ## Joining with `by = join_by(country)`
 ## ℹ Summaries were computed grouped by year and country.
@@ -392,20 +390,20 @@ student_data &lt;- read_rds(&quot;data/student_data.rds&quot;)</code></pre>
 ## ℹ Use `summarise(.by = c(year, country))` for per-operation grouping
 ##   (`?dplyr::dplyr_by`) instead.</code></pre>
 <pre class="r"><code>student_means</code></pre>
-<pre><code>## # A tibble: 513 × 9
+<pre><code>## # A tibble: 513 × 7
 ## # Groups:   year [8]
-##     year country_name country  math  read science stu_wgt  wealth    escs
-##    &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1  2000 Albania      ALB      383.  353.    379.    4.77 -1.55   -0.626 
-##  2  2000 Argentina    ARG      396.  425.    405.  129.   -1.04   -0.520 
-##  3  2000 Australia    AUS      531.  526.    525.   44.3   0.394   0.274 
-##  4  2000 Austria      AUT      507.  498.    509.   15.1   0.246   0.0155
-##  5  2000 Belgium      BEL      524.  515.    501.   16.5  -0.0873  0.172 
-##  6  2000 Bulgaria     BGR      425.  424.    443.   18.9  -1.01    0.0946
-##  7  2000 Brazil       BRA      319.  382.    363.  628.   -1.48   -1.21  
-##  8  2000 Canada       CAN      525.  524.    521.   11.7   0.307   0.535 
-##  9  2000 Switzerland  CHE      530.  496.    498.   11.8   0.0337  0.0347
-## 10  2000 Chile        CHL      388.  416.    420.   44.2  -0.923  -0.569 
+##     year country_name country math_mean read_mean science_mean     n
+##    &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt; &lt;int&gt;
+##  1  2000 Albania      ALB          383.      353.         379.  4980
+##  2  2000 Argentina    ARG          396.      425.         405.  3983
+##  3  2000 Australia    AUS          531.      526.         525.  5176
+##  4  2000 Austria      AUT          507.      498.         509.  4745
+##  5  2000 Belgium      BEL          524.      515.         501.  6670
+##  6  2000 Bulgaria     BGR          425.      424.         443.  4657
+##  7  2000 Brazil       BRA          319.      382.         363.  4893
+##  8  2000 Canada       CAN          525.      524.         521. 29687
+##  9  2000 Switzerland  CHE          530.      496.         498.  6100
+## 10  2000 Chile        CHL          388.      416.         420.  4889
 ## # ℹ 503 more rows</code></pre>
 
 
