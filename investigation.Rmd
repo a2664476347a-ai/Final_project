@@ -26,12 +26,7 @@ library(learningtower)
 
 ```{r load-data}
 # load your data 
-student_data <- load_student("all")
-
-
-
-
-
+student_data <- read_rds("data/student_data.rds")
 ```
 
 ``` {r}

@@ -370,15 +370,7 @@ project.</p>
 library(learningtower)
 # Add any other libraries here</code></pre>
 <pre class="r"><code># load your data 
-student_data &lt;- load_student(&quot;all&quot;)</code></pre>
-<pre><code>## Downloading year 2000...</code></pre>
-<pre><code>## Downloading year 2003...</code></pre>
-<pre><code>## Downloading year 2006...</code></pre>
-<pre><code>## Downloading year 2009...</code></pre>
-<pre><code>## Downloading year 2012...</code></pre>
-<pre><code>## Downloading year 2015...</code></pre>
-<pre><code>## Downloading year 2018...</code></pre>
-<pre><code>## Downloading year 2022...</code></pre>
+student_data &lt;- read_rds(&quot;data/student_data.rds&quot;)</code></pre>
 <pre class="r"><code>student_means &lt;- student_data %&gt;% group_by(year, country) %&gt;% summarize(across(where(is.numeric), mean, na.rm = TRUE)) %&gt;% left_join(countrycode) %&gt;% relocate(country_name, .before = country)</code></pre>
 <pre><code>## Warning: There was 1 warning in `summarize()`.
 ## ℹ In argument: `across(where(is.numeric), mean, na.rm = TRUE)`.
