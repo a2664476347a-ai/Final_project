@@ -367,8 +367,27 @@ creating your presentation and report easier. Please note that you
 <em>do not</em> need to submit this file as part of your group
 project.</p>
 <pre class="r"><code>library(tidyverse)
+library(learningtower)
 # Add any other libraries here</code></pre>
-<pre class="r"><code># load your data </code></pre>
+<pre class="r"><code># load your data 
+student_subset_2022</code></pre>
+<pre><code>## # A tibble: 1,850 × 22
+##     year country school_id student_id mother_educ father_educ gender computer
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;      &lt;fct&gt;       &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   
+##  1  2022 AUS     3600339   3608482    ISCED 3A    ISCED 3A    male   yes     
+##  2  2022 AUS     3600422   3606897    ISCED 3A    ISCED 3A    female yes     
+##  3  2022 AUS     3600163   3617728    ISCED 3B, C &lt;NA&gt;        female yes     
+##  4  2022 AUS     3600309   3619508    ISCED 3A    ISCED 3A    female yes     
+##  5  2022 AUS     3600738   3619834    ISCED 2     ISCED 3B, C male   yes     
+##  6  2022 AUS     3600643   3616287    ISCED 3A    ISCED 3A    female yes     
+##  7  2022 AUS     3600407   3605161    ISCED 3A    ISCED 3A    male   yes     
+##  8  2022 AUS     3600414   3612429    &lt;NA&gt;        &lt;NA&gt;        female &lt;NA&gt;    
+##  9  2022 AUS     3600031   3611689    ISCED 3A    ISCED 3A    female yes     
+## 10  2022 AUS     3600112   3614896    ISCED 3A    ISCED 2     male   yes     
+## # ℹ 1,840 more rows
+## # ℹ 14 more variables: internet &lt;fct&gt;, math &lt;dbl&gt;, read &lt;dbl&gt;, science &lt;dbl&gt;,
+## #   stu_wgt &lt;dbl&gt;, desk &lt;lgl&gt;, room &lt;fct&gt;, dishwasher &lt;lgl&gt;, television &lt;fct&gt;,
+## #   computer_n &lt;fct&gt;, car &lt;fct&gt;, book &lt;fct&gt;, wealth &lt;lgl&gt;, escs &lt;dbl&gt;</code></pre>
 
 
 
