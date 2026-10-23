@@ -26,10 +26,16 @@ library(learningtower)
 
 ```{r load-data}
 # load your data 
-student_subset_2022
+student_data <- load_student("all")
+
+
 
 
 
 ```
 
+``` {r}
+student_means <- student_data %>% group_by(year, country) %>% summarize(across(where(is.numeric), mean, na.rm = TRUE)) %>% left_join(countrycode) %>% relocate(country_name, .before = country)
+student_means
+```
 
