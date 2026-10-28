@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load-lib, message = FALSE}
 library(tidyverse)
 library(learningtower)
+library(haven)
 # Add any other libraries here
 
 
@@ -26,21 +27,17 @@ library(learningtower)
 
 ```{r load-data}
 # load your data 
-student_data <- read_rds("data/student_data.rds")
+student_math <- read_rds("data/student_math.rds")
 ```
 
 ``` {r}
 # A better code which only shows the mean scores.
-student_means <- student_data %>% 
-  group_by(year, country) %>%
+student_means <- student_math %>% 
+  group_by(country_code) %>%
   summarise(
-    math_mean = mean(math, na.rm = TRUE),
-    read_mean = mean(read, na.rm = TRUE),
-    science_mean = mean(science, na.rm = TRUE),
+    math_mean1 = mean(math_score_pv1, na.rm = TRUE),
     n = n()
-    ) %>% 
-  left_join(countrycode) %>% 
-  relocate(country_name, .before = country)
+    ) 
 student_means
 ```
 
