@@ -16,10 +16,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r load-lib, message = FALSE}
+# Add any other libraries here
 library(tidyverse)
 library(learningtower)
 library(haven)
-# Add any other libraries here
+
 ```
 
 
@@ -30,14 +31,54 @@ student_math <- read_rds("data/student_math.rds")
 student_math_pro <- student_math %>%
   select(!general_family_support)%>%
   select(!home_ict_resources)
+# mean_math_score
+student_math_pro <- student_math_pro %>%
+  mutate(
+    mean_math_score = (
+      math_score_pv1 +
+      math_score_pv2 +
+      math_score_pv3 +
+      math_score_pv4 +
+      math_score_pv5 +
+      math_score_pv6 +
+      math_score_pv7 +
+      math_score_pv8 +
+      math_score_pv9 +
+      math_score_pv10
+    ) / 10
+  )
 ```
 
 ``` {r Tidy Data}
+# students’ family socioeconomic status + math score
+student_math_ses <- student_math_pro %>%
+  select(family_socioeconomic_status,
+    mean_math_score
+  )
 
+student_math_ses
 ```
 
 ``` {r}
+# parental education + math score
+student_math_education <- student_math_pro %>%
+  select(highest_parental_education,
+    parental_education_years,
+    highest_parental_occupational_status,
+    mean_math_score
+  )
 
+student_math_education
+```
+
+``` {r}
+# home learning resources + math score
+student_math_resources <- student_math_pro %>%
+  select(home_possessions_index,
+         mean_math_score
+    )
+
+student_math_resources
 ```
 
 ``` {r}

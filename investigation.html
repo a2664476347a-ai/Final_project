@@ -369,16 +369,100 @@ project.</p>
 <p>Question: To what extent are students’ family socioeconomic status,
 parental education, and home learning resources associated with their
 mathematics performance in PISA 2025?</p>
-<pre class="r"><code>library(tidyverse)
+<pre class="r"><code># Add any other libraries here
+library(tidyverse)
 library(learningtower)
-library(haven)
-# Add any other libraries here</code></pre>
+library(haven)</code></pre>
 <pre class="r"><code># load your data 
 student_math &lt;- read_rds(&quot;data/student_math.rds&quot;)
 # remove useless colomns
 student_math_pro &lt;- student_math %&gt;%
   select(!general_family_support)%&gt;%
-  select(!home_ict_resources)</code></pre>
+  select(!home_ict_resources)
+# mean_math_score
+student_math_pro &lt;- student_math_pro %&gt;%
+  mutate(
+    mean_math_score = (
+      math_score_pv1 +
+      math_score_pv2 +
+      math_score_pv3 +
+      math_score_pv4 +
+      math_score_pv5 +
+      math_score_pv6 +
+      math_score_pv7 +
+      math_score_pv8 +
+      math_score_pv9 +
+      math_score_pv10
+    ) / 10
+  )</code></pre>
+<pre class="r"><code># students’ family socioeconomic status + math score
+student_math_ses &lt;- student_math_pro %&gt;%
+  select(family_socioeconomic_status,
+    mean_math_score
+  )
+
+student_math_ses</code></pre>
+<pre><code>## # A tibble: 755,721 × 2
+##    family_socioeconomic_status mean_math_score
+##    &lt;dbl+lbl&gt;                             &lt;dbl&gt;
+##  1 -1.10                                  334.
+##  2 -1.93                                  383.
+##  3 -1.08                                  408.
+##  4 -0.0182                                396.
+##  5 -1.07                                  382.
+##  6 -0.0856                                282.
+##  7 NA                                     319.
+##  8 -1.24                                  317.
+##  9 -2.18                                  301.
+## 10 -0.736                                 451.
+## # ℹ 755,711 more rows</code></pre>
+<pre class="r"><code># parental education + math score
+student_math_education &lt;- student_math_pro %&gt;%
+  select(highest_parental_education,
+    parental_education_years,
+    highest_parental_occupational_status,
+    mean_math_score
+  )
+
+student_math_education</code></pre>
+<pre><code>## # A tibble: 755,721 × 4
+##    highest_parental_education      parental_education_y…¹ highest_parental_occ…²
+##    &lt;dbl+lbl&gt;                       &lt;dbl+lbl&gt;              &lt;dbl+lbl&gt;             
+##  1  5 [ISCED Level 4 (Post-second… 12                     24.5                  
+##  2  1 [parent does not have any o…  6                     NA                    
+##  3  6 [ISCED Level 5 (Short-cycle… 14                     NA                    
+##  4  5 [ISCED Level 4 (Post-second… 12                     71.4                  
+##  5  5 [ISCED Level 4 (Post-second… 12                     26.0                  
+##  6  8 [ISCED Level 7 (Master&#39;s or… 16                     31.1                  
+##  7 NA                              NA                     NA                    
+##  8  5 [ISCED Level 4 (Post-second… 12                     NA                    
+##  9  1 [parent does not have any o…  6                     57.6                  
+## 10  5 [ISCED Level 4 (Post-second… 12                     71.4                  
+## # ℹ 755,711 more rows
+## # ℹ abbreviated names: ¹​parental_education_years,
+## #   ²​highest_parental_occupational_status
+## # ℹ 1 more variable: mean_math_score &lt;dbl&gt;</code></pre>
+<pre class="r"><code># home learning resources + math score
+student_math_resources &lt;- student_math_pro %&gt;%
+  select(home_possessions_index,
+         mean_math_score
+    )
+
+student_math_resources</code></pre>
+<pre><code>## # A tibble: 755,721 × 2
+##    home_possessions_index mean_math_score
+##    &lt;dbl+lbl&gt;                        &lt;dbl&gt;
+##  1 -0.457                            334.
+##  2 -1.05                             383.
+##  3 -1.18                             408.
+##  4 -0.0448                           396.
+##  5 -0.454                            382.
+##  6  0.0581                           282.
+##  7 NA                                319.
+##  8 -1.99                             317.
+##  9 -2.13                             301.
+## 10 -1.72                             451.
+## # ℹ 755,711 more rows</code></pre>
 <pre class="r"><code># A better code which only shows the mean scores.
 student_means &lt;- student_math %&gt;% 
   group_by(country_code) %&gt;%
