@@ -52,8 +52,11 @@ student_math_pro <- student_math_pro %>%
 ``` {r Tidy Data}
 # students’ family socioeconomic status + math score
 student_math_ses <- student_math_pro %>%
-  select(family_socioeconomic_status,
-    mean_math_score
+  select(student_id,
+         family_socioeconomic_status,
+         family_support,
+         home_possessions_index,
+         mean_math_score
   )
 
 student_math_ses
@@ -62,7 +65,8 @@ student_math_ses
 ``` {r}
 # parental education + math score
 student_math_education <- student_math_pro %>%
-  select(highest_parental_education,
+  select(student_id,
+         highest_parental_education,
     parental_education_years,
     highest_parental_occupational_status,
     mean_math_score
@@ -72,13 +76,16 @@ student_math_education
 ```
 
 ``` {r}
-# home learning resources + math score
-student_math_resources <- student_math_pro %>%
-  select(home_possessions_index,
+# studentinfo + math score
+student_math_studentinfo <- student_math_pro %>%
+  select(student_id,
+         country_code,
+         student_age,
+         student_gender,
          mean_math_score
     )
 
-student_math_resources
+student_math_studentinfo
 ```
 
 ``` {r}

@@ -397,71 +397,79 @@ student_math_pro &lt;- student_math_pro %&gt;%
   )</code></pre>
 <pre class="r"><code># students’ family socioeconomic status + math score
 student_math_ses &lt;- student_math_pro %&gt;%
-  select(family_socioeconomic_status,
-    mean_math_score
+  select(student_id,
+         family_socioeconomic_status,
+         family_support,
+         home_possessions_index,
+         mean_math_score
   )
 
 student_math_ses</code></pre>
-<pre><code>## # A tibble: 755,721 × 2
-##    family_socioeconomic_status mean_math_score
-##    &lt;dbl+lbl&gt;                             &lt;dbl&gt;
-##  1 -1.10                                  334.
-##  2 -1.93                                  383.
-##  3 -1.08                                  408.
-##  4 -0.0182                                396.
-##  5 -1.07                                  382.
-##  6 -0.0856                                282.
-##  7 NA                                     319.
-##  8 -1.24                                  317.
-##  9 -2.18                                  301.
-## 10 -0.736                                 451.
-## # ℹ 755,711 more rows</code></pre>
+<pre><code>## # A tibble: 755,721 × 5
+##    student_id family_socioeconomic_status family_support home_possessions_index
+##    &lt;chr&gt;      &lt;dbl+lbl&gt;                   &lt;dbl+lbl&gt;      &lt;dbl+lbl&gt;             
+##  1 00800001   -1.10                       -0.695         -0.457                
+##  2 00800002   -1.93                        0.109         -1.05                 
+##  3 00800003   -1.08                       -0.612         -1.18                 
+##  4 00800004   -0.0182                      1.70          -0.0448               
+##  5 00800005   -1.07                        1.70          -0.454                
+##  6 00800006   -0.0856                     -2.59           0.0581               
+##  7 00800007   NA                          NA             NA                    
+##  8 00800008   -1.24                       -2.59          -1.99                 
+##  9 00800009   -2.18                       -0.0564        -2.13                 
+## 10 00800010   -0.736                       0.234         -1.72                 
+## # ℹ 755,711 more rows
+## # ℹ 1 more variable: mean_math_score &lt;dbl&gt;</code></pre>
 <pre class="r"><code># parental education + math score
 student_math_education &lt;- student_math_pro %&gt;%
-  select(highest_parental_education,
+  select(student_id,
+         highest_parental_education,
     parental_education_years,
     highest_parental_occupational_status,
     mean_math_score
   )
 
 student_math_education</code></pre>
-<pre><code>## # A tibble: 755,721 × 4
-##    highest_parental_education      parental_education_y…¹ highest_parental_occ…²
-##    &lt;dbl+lbl&gt;                       &lt;dbl+lbl&gt;              &lt;dbl+lbl&gt;             
-##  1  5 [ISCED Level 4 (Post-second… 12                     24.5                  
-##  2  1 [parent does not have any o…  6                     NA                    
-##  3  6 [ISCED Level 5 (Short-cycle… 14                     NA                    
-##  4  5 [ISCED Level 4 (Post-second… 12                     71.4                  
-##  5  5 [ISCED Level 4 (Post-second… 12                     26.0                  
-##  6  8 [ISCED Level 7 (Master&#39;s or… 16                     31.1                  
-##  7 NA                              NA                     NA                    
-##  8  5 [ISCED Level 4 (Post-second… 12                     NA                    
-##  9  1 [parent does not have any o…  6                     57.6                  
-## 10  5 [ISCED Level 4 (Post-second… 12                     71.4                  
+<pre><code>## # A tibble: 755,721 × 5
+##    student_id highest_parental_education                  parental_education_y…¹
+##    &lt;chr&gt;      &lt;dbl+lbl&gt;                                   &lt;dbl+lbl&gt;             
+##  1 00800001    5 [ISCED Level 4 (Post-secondary non-tert… 12                    
+##  2 00800002    1 [parent does not have any of these qual…  6                    
+##  3 00800003    6 [ISCED Level 5 (Short-cycle tertiary ed… 14                    
+##  4 00800004    5 [ISCED Level 4 (Post-secondary non-tert… 12                    
+##  5 00800005    5 [ISCED Level 4 (Post-secondary non-tert… 12                    
+##  6 00800006    8 [ISCED Level 7 (Master&#39;s or equivalent)] 16                    
+##  7 00800007   NA                                          NA                    
+##  8 00800008    5 [ISCED Level 4 (Post-secondary non-tert… 12                    
+##  9 00800009    1 [parent does not have any of these qual…  6                    
+## 10 00800010    5 [ISCED Level 4 (Post-secondary non-tert… 12                    
 ## # ℹ 755,711 more rows
-## # ℹ abbreviated names: ¹​parental_education_years,
-## #   ²​highest_parental_occupational_status
-## # ℹ 1 more variable: mean_math_score &lt;dbl&gt;</code></pre>
-<pre class="r"><code># home learning resources + math score
-student_math_resources &lt;- student_math_pro %&gt;%
-  select(home_possessions_index,
+## # ℹ abbreviated name: ¹​parental_education_years
+## # ℹ 2 more variables: highest_parental_occupational_status &lt;dbl+lbl&gt;,
+## #   mean_math_score &lt;dbl&gt;</code></pre>
+<pre class="r"><code># studentinfo + math score
+student_math_studentinfo &lt;- student_math_pro %&gt;%
+  select(student_id,
+         country_code,
+         student_age,
+         student_gender,
          mean_math_score
     )
 
-student_math_resources</code></pre>
-<pre><code>## # A tibble: 755,721 × 2
-##    home_possessions_index mean_math_score
-##    &lt;dbl+lbl&gt;                        &lt;dbl&gt;
-##  1 -0.457                            334.
-##  2 -1.05                             383.
-##  3 -1.18                             408.
-##  4 -0.0448                           396.
-##  5 -0.454                            382.
-##  6  0.0581                           282.
-##  7 NA                                319.
-##  8 -1.99                             317.
-##  9 -2.13                             301.
-## 10 -1.72                             451.
+student_math_studentinfo</code></pre>
+<pre><code>## # A tibble: 755,721 × 5
+##    student_id country_code  student_age student_gender mean_math_score
+##    &lt;chr&gt;      &lt;chr+lbl&gt;     &lt;dbl+lbl&gt;   &lt;dbl+lbl&gt;                &lt;dbl&gt;
+##  1 00800001   ALB [Albania] 15.8        2 [Male]                  334.
+##  2 00800002   ALB [Albania] 15.9        1 [Female]                383.
+##  3 00800003   ALB [Albania] 15.8        1 [Female]                408.
+##  4 00800004   ALB [Albania] 16.2        1 [Female]                396.
+##  5 00800005   ALB [Albania] 15.5        1 [Female]                382.
+##  6 00800006   ALB [Albania] 16.2        2 [Male]                  282.
+##  7 00800007   ALB [Albania] 16          2 [Male]                  319.
+##  8 00800008   ALB [Albania] 15.8        2 [Male]                  317.
+##  9 00800009   ALB [Albania] 15.3        2 [Male]                  301.
+## 10 00800010   ALB [Albania] 15.6        2 [Male]                  451.
 ## # ℹ 755,711 more rows</code></pre>
 <pre class="r"><code># A better code which only shows the mean scores.
 student_means &lt;- student_math %&gt;% 
