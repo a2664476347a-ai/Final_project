@@ -27,75 +27,86 @@ library(haven)
 ```{r load-data}
 # load your data 
 student_math <- read_rds("data/student_math.rds")
-# remove useless colomns
-student_math_pro <- student_math %>%
-  select(!general_family_support)%>%
-  select(!home_ict_resources)
-# mean_math_score
-student_math_pro <- student_math_pro %>%
-  mutate(
-    mean_math_score = (
-      math_score_pv1 +
-      math_score_pv2 +
-      math_score_pv3 +
-      math_score_pv4 +
-      math_score_pv5 +
-      math_score_pv6 +
-      math_score_pv7 +
-      math_score_pv8 +
-      math_score_pv9 +
-      math_score_pv10
-    ) / 10
+```
+
+```{r detect and remove missing value}
+# summary(mean, median, max, NAs)
+student_math |>
+  summary()
+# Remove unnecessary columns and missing math scores
+student_math_pro <- student_math |>
+  select(-general_family_support) |>
+  filter(
+    if_all(
+      starts_with("math_score_pv"),
+      ~ !is.na(.)
+    )
   )
+```
+
+```{r select researching dataset}
+# Select variables for data processing
+
+student_processed <- student_math_pro |>
+  select(
+    student_id,
+    country_code,
+    student_age,
+    student_gender,
+    family_socioeconomic_status,
+    family_support,
+    home_possessions_index,
+    home_ict_resources,
+    highest_parental_education,
+    parental_education_years,
+    highest_parental_occupational_status,
+    starts_with("math_score_pv")
+  )
+# calculate mean score for each student
+student_processed <- student_processed |>
+  mutate(
+    math_score = rowMeans(
+      across(starts_with("math_score_pv"))
+    )
+  ) |>
+  select(-starts_with("math_score_pv"))
+
 ```
 
 ``` {r Tidy Data}
-# students’ family socioeconomic status + math score
-student_math_ses <- student_math_pro %>%
-  select(student_id,
-         family_socioeconomic_status,
-         family_support,
-         home_possessions_index,
-         mean_math_score
-  )
+# Variable Table
+variable_table <- tibble(
+  Variable = names(student_processed)
+) |>
+  mutate(
+    Category = case_when(
+      Variable %in% c(
+        "student_id",
+        "country_code",
+        "student_age",
+        "student_gender"
+      ) ~ "Student Information",
 
-student_math_ses
-```
+      Variable %in% c(
+        "family_socioeconomic_status",
+        "highest_parental_occupational_status"
+      ) ~ "Family SES",
 
-``` {r}
-# parental education + math score
-student_math_education <- student_math_pro %>%
-  select(student_id,
-         highest_parental_education,
-    parental_education_years,
-    highest_parental_occupational_status,
-    mean_math_score
-  )
+      Variable %in% c(
+        "highest_parental_education",
+        "parental_education_years"
+      ) ~ "Parental Education",
 
-student_math_education
-```
+      Variable %in% c(
+        "family_support",
+        "home_possessions_index",
+        "home_ict_resources"
+      ) ~ "Home Learning Environment",
 
-``` {r}
-# studentinfo + math score
-student_math_studentinfo <- student_math_pro %>%
-  select(student_id,
-         country_code,
-         student_age,
-         student_gender,
-         mean_math_score
+      Variable == "math_score" ~ "Mathematics Performance"
     )
-
-student_math_studentinfo
-```
-
-``` {r}
-# A better code which only shows the mean scores.
-student_means <- student_math %>% 
-  group_by(country_code) %>%
-  summarise(
-    math_mean1 = mean(math_score_pv1, na.rm = TRUE),
-    n = n()
-    ) 
-student_means
+  ) |>
+  select(Category, Variable)
+variable_table
 ```
 
