@@ -20,15 +20,24 @@ library(tidyverse)
 library(learningtower)
 library(haven)
 # Add any other libraries here
-
-
-
 ```
 
 
 ```{r load-data}
 # load your data 
 student_math <- read_rds("data/student_math.rds")
+# remove useless colomns
+student_math_pro <- student_math %>%
+  select(!general_family_support)%>%
+  select(!home_ict_resources)
+```
+
+``` {r Tidy Data}
+
+```
+
+``` {r}
+
 ```
 
 ``` {r}

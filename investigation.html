@@ -11,7 +11,7 @@
 
 <meta name="author" content="α-R: Junyi Mao, Pang-Qiyu, Ziqiao Zhou, Ali Hamzeh &amp; Yachen Wang" />
 
-<meta name="date" content="2026-10-28" />
+<meta name="date" content="2026-10-30" />
 
 <title>IDS investigation worksheet</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">IDS investigation worksheet</h1>
 <h4 class="author">α-R: Junyi Mao, Pang-Qiyu, Ziqiao Zhou, Ali Hamzeh
 &amp; Yachen Wang</h4>
-<h4 class="date">2026-10-28</h4>
+<h4 class="date">2026-10-30</h4>
 
 </div>
 
@@ -374,7 +374,11 @@ library(learningtower)
 library(haven)
 # Add any other libraries here</code></pre>
 <pre class="r"><code># load your data 
-student_math &lt;- read_rds(&quot;data/student_math.rds&quot;)</code></pre>
+student_math &lt;- read_rds(&quot;data/student_math.rds&quot;)
+# remove useless colomns
+student_math_pro &lt;- student_math %&gt;%
+  select(!general_family_support)%&gt;%
+  select(!home_ict_resources)</code></pre>
 <pre class="r"><code># A better code which only shows the mean scores.
 student_means &lt;- student_math %&gt;% 
   group_by(country_code) %&gt;%
