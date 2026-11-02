@@ -136,7 +136,7 @@ ggplot(student_processed %>%
   scale_fill_discrete(labels = c("1" = "Female", "2" = "Male")) +
   theme_bw()
 ```
-``` {r Visualising Data}
+``` {r Visualisation of the remaining data}
 #the relationship between family SES and mathematics scores
 ggplot(student_processed %>%
          filter(!is.na(family_socioeconomic_status)),
