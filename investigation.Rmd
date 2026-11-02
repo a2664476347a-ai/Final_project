@@ -175,5 +175,5 @@ ggplot(student_processed %>%
     y = "Mathematics score"
   ) +
   theme_bw()
-```
 
+```
