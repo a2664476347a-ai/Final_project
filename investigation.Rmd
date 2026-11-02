@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(learningtower)
 library(haven)
+library(ggplot2)
 
 ```
 
@@ -42,6 +43,7 @@ student_math_pro <- student_math |>
       ~ !is.na(.)
     )
   )
+
 ```
 
 ```{r select researching dataset}
@@ -70,6 +72,15 @@ student_processed <- student_processed |>
     )
   ) |>
   select(-starts_with("math_score_pv"))
+# Calculate statistics
+score_stats <- student_processed %>%
+  filter(!is.na(math_score)) %>%
+  summarise(
+    mean_score = mean(math_score),
+    median_score = median(math_score),
+    q1 = quantile(math_score, 0.25),
+    q3 = quantile(math_score, 0.75)
+  )
 
 ```
 
@@ -110,18 +121,183 @@ variable_table <- tibble(
 variable_table
 
 ```
-``` {r Visualising Data}
-#histogram of mathematics score distribution
-ggplot(student_processed, aes(x = math_score)) +
-  geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "#3498db", alpha = 0.6) +
-  geom_density(colour = "#2980b9", linewidth = 1) +
-  labs(
-    title = "Distribution of student mathematics scores",
-    x = "Mathematics score",
-    y = "Density"
-  ) +
-  theme_bw()
 
+``` {r Visualising overall}
+# box plot of overall math scores
+ggplot(
+  student_processed,
+  aes(x = math_score, y ="")
+) +
+  geom_boxplot(
+    width = 0.3
+  ) +
+  geom_point(
+    data = score_stats,
+    aes(x = mean_score, y = ""),
+  ) +
+  annotate(
+    "text",
+    x = score_stats$q1,
+    y = 1.2,
+    label = paste0("Q1 (25%): ", round(score_stats$q1, 1))
+  ) +
+  annotate(
+    "text",
+    x = score_stats$q3,
+    y = 1.2,
+    label = paste0("Q3 (75%): ", round(score_stats$q3, 1))
+  ) +
+  annotate(
+    "text",
+    x = score_stats$mean_score,
+    y = 0.8,
+    label = paste0("Mean: ", round(score_stats$mean_score, 1))
+  ) +
+  annotate(
+    "text",
+    x = score_stats$median_score,
+    y = 0.7,
+    label = paste0("Median: ", round(score_stats$median_score, 1))
+  ) +
+  labs(
+    title = "Distribution of Mathematics Scores",
+    subtitle = "Mean, Median and Quartiles | PISA 2025",
+    x = "Mathematics Score",
+    y = NULL
+  ) +
+  theme_minimal()
+
+# Calculate the 2.5th and 97.5th percentiles
+ci <- quantile(
+  student_processed$math_score,
+  probs = c(0.025, 0.975)
+)
+
+ggplot(student_processed, aes(x = math_score)) +
+  geom_histogram(
+    bins = 50,
+    fill = "steelblue",
+    color = "white"
+  ) +
+  geom_vline(
+    xintercept = ci,
+    color = "red",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  annotate(
+    "text",
+    x = ci[1],
+    y = Inf,
+    label = paste0("2.5%: ", round(ci[1], 2)),
+    color = "red",
+    vjust = 1.5,
+    size = 3.5
+  ) +
+  annotate(
+    "text",
+    x = ci[2],
+    y = Inf,
+    label = paste0("97.5%: ", round(ci[2], 2)),
+    color = "red",
+    vjust = 1.5,
+    size = 3.5
+  ) +
+  labs(
+    title = "Distribution of Mathematics Scores",
+    subtitle = "Central 95% of Mathematics Scores | PISA 2025",
+    x = "Mathematics Score",
+    y = "Number of Students"
+  ) +
+  theme_minimal()
+```
+
+```{r parental education}
+#the relationship between parental education years and mathematics score
+# Prepare data
+education_data <- student_processed %>%
+  filter(
+    as.numeric(highest_parental_education) %in% 1:9,
+    !is.na(math_score)
+  ) %>%
+  mutate(
+    parental_education = factor(
+      as.numeric(highest_parental_education),
+      levels = 1:9,
+      labels = c(
+        "No Qualification",
+        "Lower Secondary",
+        "Upper Secondary (No Tertiary Access)",
+        "Upper Secondary (Tertiary Access)",
+        "Post-secondary Non-tertiary",
+        "Short-cycle Tertiary",
+        "Bachelor's Degree",
+        "Master's Degree",
+        "Doctoral Degree"
+      )
+    )
+  )
+
+# Violin plot
+ggplot(
+  education_data,
+  aes(
+    x = parental_education,
+    y = math_score
+  )
+) +
+  geom_violin(
+    trim = TRUE
+  ) +
+  geom_boxplot(
+    width = 0.12,
+    outlier.shape = NA
+  ) +
+  labs(
+    title = "Parental Education and Mathematics Performance",
+    subtitle = "PISA 2025 Student Data",
+    x = "Highest Parental Education",
+    y = "Mathematics Score"
+  ) +
+  coord_flip() +
+  theme_minimal()
+# point plot
+ggplot(
+  education_data |>
+    group_by(parental_education) |>
+    summarise(
+      mean_score = mean(math_score)
+    ),
+  aes(
+    x = parental_education,
+    y = mean_score,
+    group = 1
+  )
+) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Average Mathematics Score by Parental Education",
+    subtitle = "PISA 2025 Student Data",
+    x = "Highest Parental Education",
+    y = "Mean Mathematics Score"
+  ) +
+  coord_flip() +
+  theme_minimal()
+```
+
+```{r visulising main}
+#the relationship between family SES and mathematics scores
+
+
+#the relationship between home possessions index and mathematics score
+
+```
+
+
+
+
+``` {r Visualisation of the interesting data}
 #math scores grouped by gender
 ggplot(student_processed %>%
          filter(!is.na(student_gender)),
@@ -135,45 +311,6 @@ ggplot(student_processed %>%
   ) +
   scale_fill_discrete(labels = c("1" = "Female", "2" = "Male")) +
   theme_bw()
-```
-``` {r Visualisation of the remaining data}
-#the relationship between family SES and mathematics scores
-ggplot(student_processed %>%
-         filter(!is.na(family_socioeconomic_status)),
-         aes(x = family_socioeconomic_status, y = math_score)) +
-  geom_point(alpha = 0.3, size = 0.8) +
-  geom_smooth(method = "lm", colour = "red", linewidth = 1) +
-  labs(
-    title = "Association socioeconomic statues index",
-    x = "Family socioeconomic status index",
-    y = "Mathematics score"
-  ) +
-  theme_bw()
-
-#the relationship between home possessions index and mathematics score
-ggplot(student_processed %>%
-         filter(!is.na(home_possessions_index)),
-       aes(x = home_possessions_index, y = math_score)) +
-  geom_point(alpha = 0.3, size = 0.8) +
-  geom_smooth(method = "lm", colour = "darkgreen", linewidth = 1) +
-  labs(
-    title = "Home possessions index vs mathematics score",
-    x = "Home possessions index",
-    y = "Mathematics score"
-  ) +
-  theme_bw()
-
-#the relationship between parental education years and mathematics score
-ggplot(student_processed %>%
-         filter(!is.na(parental_education_years)),
-       aes(x = parental_education_years, y = math_score)) +
-  geom_point(alpha = 0.3, size = 0.8) +
-  geom_smooth(method = "lm", colour = "orange", linewidth = 1) +
-  labs(
-    title = "Parental education years vs mathematics score",
-    x = "Parental education years",
-    y = "Mathematics score"
-  ) +
-  theme_bw()
+# by countries
 
 ```
