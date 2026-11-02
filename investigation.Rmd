@@ -109,6 +109,9 @@ variable_table <- tibble(
   select(Category, Variable)
 variable_table
 
+```
+``` {r Visualising Data}
+#histogram of mathematics score distribution
 ggplot(student_processed, aes(x = math_score)) +
   geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "#3498db", alpha = 0.6) +
   geom_density(colour = "#2980b9", linewidth = 1) +
@@ -116,6 +119,60 @@ ggplot(student_processed, aes(x = math_score)) +
     title = "Distribution of student mathematics scores",
     x = "Mathematics score",
     y = "Density"
+  ) +
+  theme_bw()
+
+#math scores grouped by gender
+ggplot(student_processed %>%
+         filter(!is.na(student_gender)),
+         aes(x = factor(student_gender), y = math_score, fill = factor(student_gender))) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Mathematics score by student gender",
+    x = "Gender",
+    y = "Mathematics score",
+    fill = "Gender"
+  ) +
+  scale_fill_discrete(labels = c("1" = "Female", "2" = "Male")) +
+  theme_bw()
+```
+``` {r Visualising Data}
+#the relationship between family SES and mathematics scores
+ggplot(student_processed %>%
+         filter(!is.na(family_socioeconomic_status)),
+         aes(x = family_socioeconomic_status, y = math_score)) +
+  geom_point(alpha = 0.3, size = 0.8) +
+  geom_smooth(method = "lm", colour = "red", linewidth = 1) +
+  labs(
+    title = "Association socioeconomic statues index",
+    x = "Family socioeconomic status index",
+    y = "Mathematics score"
+  ) +
+  theme_bw()
+
+#the relationship between home possessions index and mathematics score
+ggplot(student_processed %>%
+         filter(!is.na(home_possessions_index)),
+       aes(x = home_possessions_index, y = math_score)) +
+  geom_point(alpha = 0.3, size = 0.8) +
+  geom_smooth(method = "lm", colour = "darkgreen", linewidth = 1) +
+  labs(
+    title = "Home possessions index vs mathematics score",
+    x = "Home possessions index",
+    y = "Mathematics score"
+  ) +
+  theme_bw()
+
+#the relationship between parental education years and mathematics score
+ggplot(student_processed %>%
+         filter(!is.na(parental_education_years)),
+       aes(x = parental_education_years, y = math_score)) +
+  geom_point(alpha = 0.3, size = 0.8) +
+  geom_smooth(method = "lm", colour = "orange", linewidth = 1) +
+  labs(
+    title = "Parental education years vs mathematics score",
+    x = "Parental education years",
+    y = "Mathematics score"
   ) +
   theme_bw()
 ```
