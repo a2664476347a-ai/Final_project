@@ -108,5 +108,15 @@ variable_table <- tibble(
   ) |>
   select(Category, Variable)
 variable_table
+
+ggplot(student_processed, aes(x = math_score)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "#3498db", alpha = 0.6) +
+  geom_density(colour = "#2980b9", linewidth = 1) +
+  labs(
+    title = "Distribution of student mathematics scores",
+    x = "Mathematics score",
+    y = "Density"
+  ) +
+  theme_bw()
 ```
 
