@@ -288,9 +288,44 @@ ggplot(
 
 ```{r visulising main}
 #the relationship between family SES and mathematics scores
-
+#highest parental occupational status
+ggplot(
+  student_processed,
+  aes(
+    x = highest_parental_occupational_status,
+    y = math_score
+  )
+) +
+  geom_bin2d(bins = 30) +
+  geom_smooth(method = "lm", colour = "red", se = TRUE, linewidth = 1) +
+  scale_fill_viridis_c() +
+  labs(
+    title = "2D distribution with linear fit",
+    x = "Highest parental occupational status",
+    y = "Mathematics score",
+    fill = "Count"
+  ) +
+  theme_minimal()
 
 #the relationship between home possessions index and mathematics score
+#ICT index
+ggplot(
+  student_processed,
+  aes(
+    x = home_ict_resources,
+    y = math_score
+  )
+) +
+  geom_bin2d(bins = 30) +
+  geom_smooth(method = "lm", colour = "red", se = TRUE, linewidth = 1) +
+  scale_fill_viridis_c() +
+  labs(
+    title = "2D distribution with linear fit: ICT index and mathematics score",
+    x = "ICT resources",
+    y = "Mathematics score",
+    fill = "Count"
+  ) +
+  theme_minimal()
 
 ```
 
