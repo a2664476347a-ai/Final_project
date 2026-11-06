@@ -81,43 +81,6 @@ score_stats <- student_processed %>%
 
 ```
 
-```{r Tidy Data}
-# Variable Table
-variable_table <- tibble(
-  Variable = names(student_processed)
-) |>
-  mutate(
-    Category = case_when(
-      Variable %in% c(
-        "student_id",
-        "country_code",
-        "student_age",
-        "student_gender"
-      ) ~ "Student Information",
-
-      Variable %in% c(
-        "family_socioeconomic_status",
-        "highest_parental_occupational_status"
-      ) ~ "Family SES",
-
-      Variable %in% c(
-        "highest_parental_education",
-        "parental_education_years"
-      ) ~ "Parental Education",
-
-      Variable %in% c(
-        "family_support",
-        "home_possessions_index",
-        "home_ict_resources"
-      ) ~ "Home Learning Environment",
-
-      Variable == "math_score" ~ "Mathematics Performance"
-    )
-  ) |>
-  select(Category, Variable)
-variable_table
-
-```
 
 ```{r Visualising overall}
 
@@ -282,3 +245,103 @@ clean_data <- student_processed |>
     theme_minimal()
 
 ```
+```{r heatmap}
+#correlation between conditions and math performance
+correlation_data <- student_processed |>
+    select(
+        math_score,
+        highest_parental_occupational_status,
+        parental_education_years,
+        home_ict_resources
+    )
+
+correlation_values <- correlation_data |>
+    summarise(
+        across(
+            -math_score,
+            ~ cor(.x, math_score, use = "complete.obs")
+        )
+    ) |>
+    pivot_longer(
+        everything(),
+        names_to = "Variable",
+        values_to = "Correlation"
+    )
+ggplot(
+    correlation_values,
+    aes(
+        x = "Mathematics Score",
+        y = Variable,
+        fill = Correlation
+    )
+) +
+    geom_tile(
+        colour = "black",
+        linewidth = 0.8
+    ) +
+    geom_text(
+        aes(label = round(Correlation, 2)),
+        size = 4
+    ) +
+    scale_fill_gradient2(
+        low = "#2878B5",
+        mid = "white",
+        high = "#D65F73",
+        midpoint = 0,
+        limits = c(-1, 1),
+        name = "Correlation"
+    ) +
+    labs(
+        title = "Correlation with Mathematics Performance",
+        subtitle = "PISA 2025 Student Data",
+        x = NULL,
+        y = NULL
+    ) +
+    theme_minimal()+
+scale_y_discrete(labels = c(
+    "highest_parental_occupational_status" = "Parental occupation",
+    "parental_education_years" = "degree of parental education",
+    "home_ict_resources" = "Home ICT resources"
+))
+
+```
+```{r}
+model <- lm(
+  math_score ~ highest_parental_occupational_status +
+    parental_education_years +
+    home_ict_resources +
+    factor(country_code),
+  data = student_processed
+)
+summary(model)
+# Extract regression coefficients
+coefs <- coef(model)
+
+# Create the regression equation
+equation <- paste0(
+  "Math Score = ",
+  sprintf("%.2f", coefs[1]),
+  paste0(
+    ifelse(coefs[-1] >= 0, " + ", " - "),
+    sprintf("%.2f", abs(coefs[-1])),
+    " × ",
+    names(coefs)[-1],
+    collapse = ""
+  )
+)
+
+
+cat(equation)
+```
+
+### Multiple Linear Regression
+
+The estimated regression model is:
+
+$$
+\widehat{MathScore}_i =
+354.89 + 0.78 Occupation_i
++ 4.30 Education_i
++ 5.43 ICT_i
++ \alpha_{Country(i)}
+$$
