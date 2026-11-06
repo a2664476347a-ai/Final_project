@@ -5,15 +5,13 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-**Note:** You can use this file as you 'working document' where you can try out various investigation ideas and keep notes about your findings. How you use and structure this file is up to you. It is recommended that you keep notes about what you are investigating and what you find as this will make the process of creating your presentation and report easier. Please note that you _do not_ need to submit this file as part of your group project.
+**Note:** You can use this file as you 'working document' where you can try out various investigation ideas and keep notes about your findings. How you use and structure this file is up to you. It is recommended that you keep notes about what you are investigating and what you find as this will make the process of creating your presentation and report easier. Please note that you *do not* need to submit this file as part of your group project.
 
 Question: To what extent are students’ family socioeconomic status, parental education, and home learning resources associated with their mathematics performance in PISA 2025?
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 
 ```{r load-lib, message = FALSE}
 # Add any other libraries here
@@ -23,7 +21,6 @@ library(haven)
 library(ggplot2)
 
 ```
-
 
 ```{r load-data}
 # load your data 
@@ -84,7 +81,7 @@ score_stats <- student_processed %>%
 
 ```
 
-``` {r Tidy Data}
+```{r Tidy Data}
 # Variable Table
 variable_table <- tibble(
   Variable = names(student_processed)
@@ -122,50 +119,7 @@ variable_table
 
 ```
 
-``` {r Visualising overall}
-# box plot of overall math scores
-ggplot(
-  student_processed,
-  aes(x = math_score, y ="")
-) +
-  geom_boxplot(
-    width = 0.3
-  ) +
-  geom_point(
-    data = score_stats,
-    aes(x = mean_score, y = ""),
-  ) +
-  annotate(
-    "text",
-    x = score_stats$q1,
-    y = 1.2,
-    label = paste0("Q1 (25%): ", round(score_stats$q1, 1))
-  ) +
-  annotate(
-    "text",
-    x = score_stats$q3,
-    y = 1.2,
-    label = paste0("Q3 (75%): ", round(score_stats$q3, 1))
-  ) +
-  annotate(
-    "text",
-    x = score_stats$mean_score,
-    y = 0.8,
-    label = paste0("Mean: ", round(score_stats$mean_score, 1))
-  ) +
-  annotate(
-    "text",
-    x = score_stats$median_score,
-    y = 0.7,
-    label = paste0("Median: ", round(score_stats$median_score, 1))
-  ) +
-  labs(
-    title = "Distribution of Mathematics Scores",
-    subtitle = "Mean, Median and Quartiles | PISA 2025",
-    x = "Mathematics Score",
-    y = NULL
-  ) +
-  theme_minimal()
+```{r Visualising overall}
 
 # Calculate the 2.5th and 97.5th percentiles
 ci <- quantile(
@@ -181,7 +135,7 @@ ggplot(student_processed, aes(x = math_score)) +
   ) +
   geom_vline(
     xintercept = ci,
-    color = "red",
+    color = "#D98282",
     linetype = "dashed",
     linewidth = 1
   ) +
@@ -190,7 +144,7 @@ ggplot(student_processed, aes(x = math_score)) +
     x = ci[1],
     y = Inf,
     label = paste0("2.5%: ", round(ci[1], 2)),
-    color = "red",
+    color = "#D98282",
     vjust = 1.5,
     size = 3.5
   ) +
@@ -199,7 +153,7 @@ ggplot(student_processed, aes(x = math_score)) +
     x = ci[2],
     y = Inf,
     label = paste0("97.5%: ", round(ci[2], 2)),
-    color = "red",
+    color = "#D98282",
     vjust = 1.5,
     size = 3.5
   ) +
@@ -238,114 +192,93 @@ education_data <- student_processed %>%
     )
   )
 
+
 # Violin plot
 ggplot(
-  education_data,
-  aes(
-    x = parental_education,
-    y = math_score
-  )
+    education_data,
+    aes(
+        x = parental_education,
+        y = math_score
+    )
 ) +
-  geom_violin(
-    trim = TRUE
-  ) +
-  geom_boxplot(
-    width = 0.12,
-    outlier.shape = NA
-  ) +
-  labs(
-    title = "Parental Education and Mathematics Performance",
-    subtitle = "PISA 2025 Student Data",
-    x = "Highest Parental Education",
-    y = "Mathematics Score"
-  ) +
-  coord_flip() +
-  theme_minimal()
-# point plot
-ggplot(
-  education_data |>
-    group_by(parental_education) |>
-    summarise(
-      mean_score = mean(math_score)
-    ),
-  aes(
-    x = parental_education,
-    y = mean_score,
-    group = 1
-  )
-) +
-  geom_point() +
-  geom_line() +
-  labs(
-    title = "Average Mathematics Score by Parental Education",
-    subtitle = "PISA 2025 Student Data",
-    x = "Highest Parental Education",
-    y = "Mean Mathematics Score"
-  ) +
-  coord_flip() +
-  theme_minimal()
+    geom_violin(
+        trim = TRUE,
+        fill = "#DCD6F7",
+        colour = "#7566A8",
+        alpha = 0.8
+    ) +
+    geom_boxplot(
+        width = 0.12,
+        outlier.shape = NA,
+        fill = "white",
+        colour = "#493A70",
+        linewidth = 0.5
+    ) +
+    labs(
+        title = "Parental Education and Mathematics Performance",
+        subtitle = "PISA 2025 Student Data",
+        x = "Highest Parental Education",
+        y = "Mathematics Score"
+    ) +
+    coord_flip() +
+    theme_minimal()
 ```
 
-```{r visulising main}
-#the relationship between family SES and mathematics scores
-#highest parental occupational status
+```{r main2}
+#the relationship between highest parental occupational status and mathematics scores
+student_processed|>
+filter(
+    !is.na(highest_parental_occupational_status)
+  ) |>
 ggplot(
-  student_processed,
   aes(
     x = highest_parental_occupational_status,
     y = math_score
   )
 ) +
-  geom_bin2d(bins = 30) +
-  geom_smooth(method = "lm", colour = "red", se = TRUE, linewidth = 1) +
-  scale_fill_viridis_c() +
+  geom_hex(bins = 50) +
+  scale_fill_gradient(
+    low = "#EFF6FB",
+    high = "#20577F",
+    trans = "log10",
+    name = "Number of students"
+)+
   labs(
-    title = "2D distribution with linear fit",
-    x = "Highest parental occupational status",
-    y = "Mathematics score",
-    fill = "Count"
+    title = "Parental Occupational Status and Mathematics Achievement",
+    x = "Family Highest Occupational grade",
+    y = "Mathematics score"
   ) +
   theme_minimal()
-
-#the relationship between home possessions index and mathematics score
-#ICT index
-ggplot(
-  student_processed,
-  aes(
-    x = home_ict_resources,
-    y = math_score
-  )
-) +
-  geom_bin2d(bins = 30) +
-  geom_smooth(method = "lm", colour = "red", se = TRUE, linewidth = 1) +
-  scale_fill_viridis_c() +
-  labs(
-    title = "2D distribution with linear fit: ICT index and mathematics score",
-    x = "ICT resources",
-    y = "Mathematics score",
-    fill = "Count"
-  ) +
-  theme_minimal()
-
 ```
 
-
-
-
-``` {r Visualisation of the interesting data}
-#math scores grouped by gender
-ggplot(student_processed %>%
-         filter(!is.na(student_gender)),
-         aes(x = factor(student_gender), y = math_score, fill = factor(student_gender))) +
-  geom_boxplot(alpha = 0.7) +
-  labs(
-    title = "Mathematics score by student gender",
-    x = "Gender",
-    y = "Mathematics score",
-    fill = "Gender"
-  ) +
-  scale_fill_discrete(labels = c("1" = "Female", "2" = "Male")) +
-  theme_bw()
-# by countries
+```{r main3}
+#the relationship between ICT and mathematics score
+clean_data <- student_processed |>
+     filter(
+         is.finite(home_ict_resources)
+     ) 
+ ggplot(
+    clean_data,
+    aes(x = home_ict_resources, y = math_score)
+) +
+    
+    stat_summary_bin(
+        fun = mean,
+        bins = 1000,
+        geom = "point",
+        colour = "#F2A6B3",
+        size = 1
+    ) +
+    geom_smooth(
+    method = "gam",
+    colour = "skyblue",
+    linewidth = 1.1
+)+
+    labs(
+        title = "Home ICT Resources and Mathematics score",
+        x = "Home ICT Resources Index",
+        y = "Mean Mathematics score in each class"
+    ) +
+    theme_minimal()
 
 ```
