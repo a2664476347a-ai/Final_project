@@ -308,7 +308,7 @@ scale_y_discrete(labels = c(
 ```{r}
 model <- lm(
   math_score ~ highest_parental_occupational_status +
-    parental_education_years +
+    highest_parental_education +
     home_ict_resources +
     factor(country_code),
   data = student_processed
