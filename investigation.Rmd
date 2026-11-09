@@ -251,7 +251,7 @@ correlation_data <- student_processed |>
     select(
         math_score,
         highest_parental_occupational_status,
-        parental_education_years,
+        highest_parental_education,
         home_ict_resources
     )
 
@@ -300,7 +300,7 @@ ggplot(
     theme_minimal()+
 scale_y_discrete(labels = c(
     "highest_parental_occupational_status" = "Parental occupation",
-    "parental_education_years" = "degree of parental education",
+    "highest_parental_education" = "degree of parental education",
     "home_ict_resources" = "Home ICT resources"
 ))
 
