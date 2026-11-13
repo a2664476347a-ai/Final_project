@@ -306,32 +306,25 @@ scale_y_discrete(labels = c(
 
 ```
 ```{r}
+# linear regression
 model <- lm(
+  math_score ~ highest_parental_occupational_status +
+    highest_parental_education +
+    home_ict_resources,
+  data = student_processed
+)
+summary(model)
+# linear regression with country factor
+model2 <- lm(
   math_score ~ highest_parental_occupational_status +
     highest_parental_education +
     home_ict_resources +
     factor(country_code),
   data = student_processed
 )
-summary(model)
-# Extract regression coefficients
-coefs <- coef(model)
-
-# Create the regression equation
-equation <- paste0(
-  "Math Score = ",
-  sprintf("%.2f", coefs[1]),
-  paste0(
-    ifelse(coefs[-1] >= 0, " + ", " - "),
-    sprintf("%.2f", abs(coefs[-1])),
-    " × ",
-    names(coefs)[-1],
-    collapse = ""
-  )
-)
+summary(model2)
 
 
-cat(equation)
 ```
 
 ### Multiple Linear Regression
