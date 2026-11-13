@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load-lib, message = FALSE}
 # Add any other libraries here
 library(tidyverse)
+library(tidymodels)
 library(learningtower)
 library(haven)
 library(ggplot2)
@@ -307,22 +308,27 @@ scale_y_discrete(labels = c(
 ```
 ```{r}
 # linear regression
-model <- lm(
-  math_score ~ highest_parental_occupational_status +
+
+model <- linear_reg() |>
+  set_engine("lm") |>
+  fit(
+    math_score ~ highest_parental_occupational_status +
     highest_parental_education +
     home_ict_resources,
   data = student_processed
 )
-summary(model)
+summary(model$fit)
 # linear regression with country factor
-model2 <- lm(
-  math_score ~ highest_parental_occupational_status +
+model2 <- linear_reg() |>
+  set_engine("lm") |>
+  fit(
+    math_score ~ highest_parental_occupational_status +
     highest_parental_education +
     home_ict_resources +
     factor(country_code),
   data = student_processed
 )
-summary(model2)
+summary(model2$fit)
 
 
 ```
