@@ -134,25 +134,11 @@ ggplot(student_processed, aes(x = math_score)) +
 #the relationship between parental education years and mathematics score
 # Prepare data
 education_data <- student_processed %>%
-  filter(
-    as.numeric(highest_parental_education) %in% 1:9,
-    !is.na(math_score)
-  ) %>%
+  drop_na(parental_education_years,
+    math_score) %>%
   mutate(
     parental_education = factor(
-      as.numeric(highest_parental_education),
-      levels = 1:9,
-      labels = c(
-        "No Qualification",
-        "Lower Secondary",
-        "Upper Secondary (No Tertiary Access)",
-        "Upper Secondary (Tertiary Access)",
-        "Post-secondary Non-tertiary",
-        "Short-cycle Tertiary",
-        "Bachelor's Degree",
-        "Master's Degree",
-        "Doctoral Degree"
-      )
+      as.numeric(parental_education_years)
     )
   )
 
@@ -181,7 +167,7 @@ ggplot(
     labs(
         title = "Parental Education and Mathematics Performance",
         subtitle = "PISA 2025 Student Data",
-        x = "Highest Parental Education",
+        x = "Highest Education of Parents in Years",
         y = "Mathematics Score"
     ) +
     coord_flip() +
@@ -252,7 +238,7 @@ correlation_data <- student_processed |>
     select(
         math_score,
         highest_parental_occupational_status,
-        highest_parental_education,
+        parental_education_years,
         home_ict_resources
     )
 
@@ -301,7 +287,7 @@ ggplot(
     theme_minimal()+
 scale_y_discrete(labels = c(
     "highest_parental_occupational_status" = "Parental occupation",
-    "highest_parental_education" = "degree of parental education",
+    "parental_education_years" = "Highest education of parents in years",
     "home_ict_resources" = "Home ICT resources"
 ))
 
@@ -313,7 +299,7 @@ model <- linear_reg() |>
   set_engine("lm") |>
   fit(
     math_score ~ highest_parental_occupational_status +
-    highest_parental_education +
+    parental_education_years +
     home_ict_resources,
   data = student_processed
 )
@@ -323,7 +309,7 @@ model2 <- linear_reg() |>
   set_engine("lm") |>
   fit(
     math_score ~ highest_parental_occupational_status +
-    highest_parental_education +
+    parental_education_years +
     home_ict_resources +
     factor(country_code),
   data = student_processed
@@ -339,8 +325,9 @@ The estimated regression model is:
 
 $$
 \widehat{MathScore}_i =
-354.89 + 0.78 Occupation_i
-+ 4.30 Education_i
-+ 5.43 ICT_i
-+ \alpha_{Country(i)}
+  {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
+  \alpha_{Country(i)}
 $$
