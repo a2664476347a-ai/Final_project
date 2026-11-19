@@ -19,7 +19,6 @@ library(tidyverse)
 library(tidymodels)
 library(learningtower)
 library(haven)
-library(ggplot2)
 
 ```
 

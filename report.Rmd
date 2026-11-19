@@ -1,5 +1,5 @@
 ---
-title: "Project title"
+title: "Family Background and Mathematics Performance in PISA 2025"
 author: "by α-R: Junyi Mao, Pang-Qiyu, Ziqiao Zhou, Ali Hamzeh & Yachen Wang"
 date: "`r Sys.Date()`"
 output: html_document
@@ -12,6 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load-lib, include = FALSE}
 library(tidyverse)
+library(tidymodels)
+library(learningtower)
+library(haven)
 # Add any other libraries here
 
 
@@ -21,9 +24,44 @@ library(tidyverse)
 
 ```{r load-data, include=FALSE}
 # load your data here and any pre-processing/cleaning 
-#  that you need for your report.
+# Load data set
+student_math <- read_rds("data/student_math.rds")
 
+# Remove unnecessary columns and missing mathematics scores
+student_math_pro <- student_math |>
+  select(-general_family_support) |>
+  filter(
+    if_all(
+      starts_with("math_score_pv"),
+      ~ !is.na(.)
+    )
+  )
 
+# Select variables for the investigation
+student_processed <- student_math_pro |>
+  select(
+    student_id,
+    country_code,
+    student_age,
+    student_gender,
+    family_socioeconomic_status,
+    family_support,
+    home_possessions_index,
+    home_ict_resources,
+    highest_parental_education,
+    parental_education_years,
+    highest_parental_occupational_status,
+    starts_with("math_score_pv")
+  )
+
+# Calculate mean mathematics score
+student_processed <- student_processed |>
+  mutate(
+    math_score = rowMeans(
+      across(starts_with("math_score_pv"))
+    )
+  ) |>
+  select(-starts_with("math_score_pv"))
 
 
 ```
@@ -33,7 +71,11 @@ library(tidyverse)
 
 Describe your research question here. Include why this question might be of interest. 
 
-*We will investigate how students' circumstances at home are associated with their mathematics performance in PISA 2025. In particular, we will focus on three variables representative of a student's individual circumstances: family socioeconomic status, parental education, and home learning resources. Exploring the relationship between these variables and performance in mathematics across the dataset will help us to identify and understand any possible connections between the socioeconomic aspects of a student's home life and their academic performance in mathematics, a subject whose mean PISA test scores have declined across the world since 2015 [ADD REFERENCE].*
+**Question**: 
+*How are parental education, parental occupational status, and home ICT resources associated with students’ mathematics performance in PISA 2025?*
+
+**Why**:
+*Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.*
 
 
 ## Data
@@ -42,11 +84,20 @@ Briefly describe your dataset here - include a description of the key variables 
 Include a citation for your data. 
 See http://libraryguides.vu.edu.au/c.php?g=386501&p=4347840 for guidance on proper citation for datasets. 
 If you got your data off the web, make sure to state the retrieval date.
+### Dataset overview
 
+*This investigation uses student-level data from the PISA 2025 Student Questionnaire, published by the Organisation for Economic Co-operation and Development (OECD). The dataset contains information on students' backgrounds and mathematics performance, allowing us to investigate the associations between family circumstances and academic achievement (OECD, n.d.).*
 
+### Key variables
 
+介绍数学成绩、父母教育、职业地位和家庭 ICT 资源等变量。
 
+### Data processing
 
+介绍缺失值处理、变量筛选和数学成绩计算。
+
+### Data citation
+The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.
 
 ## Findings
 
@@ -66,12 +117,23 @@ The addin will ignore code chunks and only count the words in prose. If you don'
 You can also load your data here and present any analysis results / plots.
 Make sure to hide your code with  `echo = FALSE` unless the point you are trying to make is about the code itself, in which case you should show your code.
 
+*This is a template; you can use it if you're at a loss for ideas(by Junyi).*
+###Overall mathematics performance
 
+###Describe graphs
+####Parental education and mathematics performance
 
+####Parental occupational status and mathematics performance
+
+####Home ICT resources and mathematics performance
+
+###Correlation and regression analysis
+
+###Discussion(maybe + conclusion?)
 
 
 ## References
 
-List any references here. You should, at a minimum, list your data source.
+Organisation for Economic Co-operation and Development. (n.d.). *PISA 2025 student questionnaire data file* [Data set]. Retrieved October 28, 2026, from https://webfs.oecd.org/pisa2022/index.html
 
 
