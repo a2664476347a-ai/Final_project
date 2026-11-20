@@ -90,11 +90,31 @@ If you got your data off the web, make sure to state the retrieval date.
 
 ### Key variables
 
-介绍数学成绩、父母教育、职业地位和家庭 ICT 资源等变量。
+The investigation centres on four main groups of variables.
+
+Mathematics performance: the original dataset has ten mathematics plausible values (`math_score_pv1` to `math_score_pv10`). For the exploratory analysis I combined them with the row-wise mean to create `math_score`, which is simply the average of the ten values for each student.
+
+Parental education: two variables were kept, `highest_parental_education`, which records the highest category of parental education, and `parental_education_years`, the number of years of parental education. The latter feeds the parental education visualisation and the regression analysis.
+
+Parental occupational status: `highest_parental_occupational_status` records the highest occupational status reported for a student's parents. I used it to see whether parents' occupational circumstances are associated with students' mathematics performance.
+
+Home ICT resources: `home_ict_resources` measures the ICT resources students have at home. It went into the question of how access to home ICT relates to mathematics performance.
+
+A few other variables — student age, gender, country code, family socioeconomic status and home possessions — stayed in the dataset to give extra background on students and their homes.
 
 ### Data processing
 
-介绍缺失值处理、变量筛选和数学成绩计算。
+The original file holds 755,721 student records and 24 variables across 90 countries and economies. Each row is one student, each column one variable. Before any cleaning I ran `summary()` over the file to look at each variable and see where values were missing.
+
+Several variables had missing observations. `general_family_support` was the worst case, with 623,576 missing values, about 82.51% of the dataset. It was not central to the research question, so I dropped it with `select()`. Each of the ten mathematics plausible-value variables was missing 8,653 observations. So that every retained student had a full set of mathematics scores, rows with a missing value in any of the ten variables were removed using `filter()` and `if_all()`.
+
+`select()` was then used again to keep what the investigation needed: student information, parental education, parental occupational status, home learning resources and the family background indicators.
+
+To simplify the exploratory stage, `mutate()`, `across()` and `rowMeans()` were used to average the ten plausible values into a new variable, `math_score`, and the ten original columns were dropped from the simplified dataset. The resulting `student_processed` dataset has 12 variables and one row per retained student.
+
+The remaining missing values in the family background variables were not stripped out of the whole dataset at this stage. Instead, observations were filtered to suit each analysis. Missing parental education years, for instance, were excluded when the parental education visualisation was prepared, while the other visualisations excluded missing occupational status and non-finite ICT values respectively. The correlation analysis used complete observations on the two variables being compared, and the regression model used rows that were complete on all included variables.
+
+The result is a smaller, more workable dataset that still carries the variables needed to answer the research question. With one mathematics score and the selected family background variables, it was possible to draw histograms, violin plots, hexagonal binning plots and smoothed trend curves, then run the correlation and regression analyses on the links between family background and mathematics performance.
 
 ### Data citation
 The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.

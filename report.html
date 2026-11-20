@@ -389,11 +389,70 @@ investigate the associations between family circumstances and academic
 achievement (OECD, n.d.).</em></p>
 <div id="key-variables" class="section level3">
 <h3>Key variables</h3>
-<p>介绍数学成绩、父母教育、职业地位和家庭 ICT 资源等变量。</p>
+<p>The investigation centres on four main groups of variables.</p>
+<p>Mathematics performance: the original dataset has ten mathematics
+plausible values (<code>math_score_pv1</code> to
+<code>math_score_pv10</code>). For the exploratory analysis I combined
+them with the row-wise mean to create <code>math_score</code>, which is
+simply the average of the ten values for each student.</p>
+<p>Parental education: two variables were kept,
+<code>highest_parental_education</code>, which records the highest
+category of parental education, and
+<code>parental_education_years</code>, the number of years of parental
+education. The latter feeds the parental education visualisation and the
+regression analysis.</p>
+<p>Parental occupational status:
+<code>highest_parental_occupational_status</code> records the highest
+occupational status reported for a student’s parents. I used it to see
+whether parents’ occupational circumstances are associated with
+students’ mathematics performance.</p>
+<p>Home ICT resources: <code>home_ict_resources</code> measures the ICT
+resources students have at home. It went into the question of how access
+to home ICT relates to mathematics performance.</p>
+<p>A few other variables — student age, gender, country code, family
+socioeconomic status and home possessions — stayed in the dataset to
+give extra background on students and their homes.</p>
 </div>
 <div id="data-processing" class="section level3">
 <h3>Data processing</h3>
-<p>介绍缺失值处理、变量筛选和数学成绩计算。</p>
+<p>The original file holds 755,721 student records and 24 variables
+across 90 countries and economies. Each row is one student, each column
+one variable. Before any cleaning I ran <code>summary()</code> over the
+file to look at each variable and see where values were missing.</p>
+<p>Several variables had missing observations.
+<code>general_family_support</code> was the worst case, with 623,576
+missing values, about 82.51% of the dataset. It was not central to the
+research question, so I dropped it with <code>select()</code>. Each of
+the ten mathematics plausible-value variables was missing 8,653
+observations. So that every retained student had a full set of
+mathematics scores, rows with a missing value in any of the ten
+variables were removed using <code>filter()</code> and
+<code>if_all()</code>.</p>
+<p><code>select()</code> was then used again to keep what the
+investigation needed: student information, parental education, parental
+occupational status, home learning resources and the family background
+indicators.</p>
+<p>To simplify the exploratory stage, <code>mutate()</code>,
+<code>across()</code> and <code>rowMeans()</code> were used to average
+the ten plausible values into a new variable, <code>math_score</code>,
+and the ten original columns were dropped from the simplified dataset.
+The resulting <code>student_processed</code> dataset has 12 variables
+and one row per retained student.</p>
+<p>The remaining missing values in the family background variables were
+not stripped out of the whole dataset at this stage. Instead,
+observations were filtered to suit each analysis. Missing parental
+education years, for instance, were excluded when the parental education
+visualisation was prepared, while the other visualisations excluded
+missing occupational status and non-finite ICT values respectively. The
+correlation analysis used complete observations on the two variables
+being compared, and the regression model used rows that were complete on
+all included variables.</p>
+<p>The result is a smaller, more workable dataset that still carries the
+variables needed to answer the research question. With one mathematics
+score and the selected family background variables, it was possible to
+draw histograms, violin plots, hexagonal binning plots and smoothed
+trend curves, then run the correlation and regression analyses on the
+links between family background and mathematics performance.</p>
 </div>
 <div id="data-citation" class="section level3">
 <h3>Data citation</h3>
