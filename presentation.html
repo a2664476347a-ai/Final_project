@@ -64,21 +64,167 @@ class: inverse, center, middle
 
 # Data
 
-- **Source:** student-level data from the PISA 2025 Student Questionnaire, published by the OECD
-- **Size:** 755,721 students from 90 countries/regions (350,769 used in our 2 models)
+**Overview:**
+- Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.
+
+**Data processing:** 
+- **Size:** 755,721 students from 90 countries/regions (747,068 used in visualization, 350,769 used in our 2 linear models)
 - **Explanatory variables:** Highest education of parents in years, Parental occupation, Home ICT resources
-- **Outcome:** mean mathematics score
+---
+
+class: inverse, center, middle
+
+# Visualization
 
 ---
 
 # Overall mathematics performance
-&lt;img src="presentation_files/figure-html/Visualising_overall-1.png" alt="" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/Visualising-overall-1.png" alt="" width="80%" /&gt;
 
 ---
 
-class: inverse, middle, center
+&lt;img src="presentation_files/figure-html/parental-education-1.png" alt="" width="80%" /&gt;
 
-# Using xaringan
+---
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" alt="" width="80%" /&gt;
+
+---
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-3-1.png" alt="" width="80%" /&gt;
+---
+
+class: inverse, center, middle
+
+# Findings and related discussion
+
+---
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" alt="" width="80%" /&gt;
+
+---
+
+
+```
+## 
+## Call:
+## stats::lm(formula = math_score ~ highest_parental_occupational_status + 
+##     parental_education_years + home_ict_resources, data = data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -326.11  -61.55   -8.03   52.63  460.87 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                          3.488e+02  8.199e-01  425.46   &lt;2e-16 ***
+## highest_parental_occupational_status 8.303e-01  7.773e-03  106.82   &lt;2e-16 ***
+## parental_education_years             3.986e+00  6.400e-02   62.29   &lt;2e-16 ***
+## home_ict_resources                   1.670e+01  1.241e-01  134.52   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 89.37 on 350765 degrees of freedom
+##   (396299 observations deleted due to missingness)
+## Multiple R-squared:  0.191,	Adjusted R-squared:  0.191 
+## F-statistic: 2.761e+04 on 3 and 350765 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+
+```
+## 
+## Call:
+## stats::lm(formula = math_score ~ highest_parental_occupational_status + 
+##     parental_education_years + home_ict_resources + factor(country_code), 
+##     data = data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -339.58  -49.07   -1.25   48.15  353.53 
+## 
+## Coefficients:
+##                                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                           3.549e+02  1.551e+00 228.883  &lt; 2e-16 ***
+## highest_parental_occupational_status  7.848e-01  6.497e-03 120.802  &lt; 2e-16 ***
+## parental_education_years              4.301e+00  5.355e-02  80.323  &lt; 2e-16 ***
+## home_ict_resources                    5.428e+00  1.193e-01  45.506  &lt; 2e-16 ***
+## factor(country_code)ARE              -1.199e+00  1.487e+00  -0.806  0.42000    
+## factor(country_code)ARG              -4.778e+01  1.633e+00 -29.261  &lt; 2e-16 ***
+## factor(country_code)ARM              -5.327e+01  2.124e+00 -25.077  &lt; 2e-16 ***
+## factor(country_code)AZE              -5.090e+00  1.728e+00  -2.946  0.00322 ** 
+## factor(country_code)BGR              -1.880e+01  1.846e+00 -10.182  &lt; 2e-16 ***
+## factor(country_code)BRA              -5.024e+01  1.492e+00 -33.679  &lt; 2e-16 ***
+## factor(country_code)BRN              -1.159e+01  1.767e+00  -6.560 5.40e-11 ***
+## factor(country_code)CAN               2.568e+01  1.506e+00  17.055  &lt; 2e-16 ***
+## factor(country_code)CHL              -2.848e+01  1.742e+00 -16.351  &lt; 2e-16 ***
+## factor(country_code)COL              -4.047e+01  1.699e+00 -23.815  &lt; 2e-16 ***
+## factor(country_code)DOM              -9.559e+01  1.752e+00 -54.547  &lt; 2e-16 ***
+## factor(country_code)ECU              -6.145e+01  1.622e+00 -37.881  &lt; 2e-16 ***
+## factor(country_code)ESP               1.231e+01  1.476e+00   8.339  &lt; 2e-16 ***
+## factor(country_code)GEO              -1.388e+01  1.834e+00  -7.568 3.80e-14 ***
+## factor(country_code)GTM              -8.286e+01  1.735e+00 -47.767  &lt; 2e-16 ***
+## factor(country_code)HKG               8.066e+01  1.757e+00  45.915  &lt; 2e-16 ***
+## factor(country_code)HUN               1.488e+01  1.712e+00   8.692  &lt; 2e-16 ***
+## factor(country_code)IDN              -4.695e+01  1.551e+00 -30.269  &lt; 2e-16 ***
+## factor(country_code)ISR              -3.622e+00  1.823e+00  -1.987  0.04690 *  
+## factor(country_code)JOR              -4.897e+01  1.755e+00 -27.906  &lt; 2e-16 ***
+## factor(country_code)KEN              -8.667e+01  1.800e+00 -48.156  &lt; 2e-16 ***
+## factor(country_code)KHM              -4.249e+01  1.946e+00 -21.836  &lt; 2e-16 ***
+## factor(country_code)KSV              -8.493e+01  1.762e+00 -48.206  &lt; 2e-16 ***
+## factor(country_code)LBN              -5.042e+01  1.958e+00 -25.751  &lt; 2e-16 ***
+## factor(country_code)MAC               1.031e+02  1.777e+00  58.046  &lt; 2e-16 ***
+## factor(country_code)MAR              -6.436e+01  1.784e+00 -36.071  &lt; 2e-16 ***
+## factor(country_code)MDA              -2.429e+01  1.748e+00 -13.899  &lt; 2e-16 ***
+## factor(country_code)MEX              -4.241e+01  1.659e+00 -25.568  &lt; 2e-16 ***
+## factor(country_code)MLT               1.483e+00  1.983e+00   0.747  0.45476    
+## factor(country_code)MNE              -2.764e+01  1.742e+00 -15.872  &lt; 2e-16 ***
+## factor(country_code)MNG              -1.634e+01  1.719e+00  -9.505  &lt; 2e-16 ***
+## factor(country_code)MUS              -1.996e+01  1.811e+00 -11.023  &lt; 2e-16 ***
+## factor(country_code)MYS              -3.857e+01  1.670e+00 -23.100  &lt; 2e-16 ***
+## factor(country_code)NOR              -4.061e+00  1.742e+00  -2.332  0.01973 *  
+## factor(country_code)NZL               3.742e+01  1.873e+00  19.974  &lt; 2e-16 ***
+## factor(country_code)PER              -3.938e+01  1.731e+00 -22.756  &lt; 2e-16 ***
+## factor(country_code)PHL              -3.915e+01  1.676e+00 -23.358  &lt; 2e-16 ***
+## factor(country_code)PRY              -8.926e+01  1.783e+00 -50.071  &lt; 2e-16 ***
+## factor(country_code)PSE              -7.422e+01  1.677e+00 -44.265  &lt; 2e-16 ***
+## factor(country_code)QAT              -3.241e+01  2.069e+00 -15.666  &lt; 2e-16 ***
+## factor(country_code)QCI               1.703e+02  1.562e+00 109.056  &lt; 2e-16 ***
+## factor(country_code)QTJ              -5.747e+01  1.836e+00 -31.304  &lt; 2e-16 ***
+## factor(country_code)ROU              -2.270e+00  1.694e+00  -1.340  0.18032    
+## factor(country_code)RWA              -7.946e+01  1.834e+00 -43.328  &lt; 2e-16 ***
+## factor(country_code)SAU              -7.115e+01  1.739e+00 -40.926  &lt; 2e-16 ***
+## factor(country_code)SRB              -2.046e+01  1.776e+00 -11.521  &lt; 2e-16 ***
+## factor(country_code)SVN               2.334e+00  1.742e+00   1.339  0.18043    
+## factor(country_code)TAP               9.369e+01  1.669e+00  56.121  &lt; 2e-16 ***
+## factor(country_code)THA              -6.847e+00  1.652e+00  -4.146 3.39e-05 ***
+## factor(country_code)TUR               3.733e+01  1.665e+00  22.426  &lt; 2e-16 ***
+## factor(country_code)URY              -2.323e+01  1.716e+00 -13.536  &lt; 2e-16 ***
+## factor(country_code)USA               6.120e+00  2.110e+00   2.900  0.00373 ** 
+## factor(country_code)VNM               1.684e+01  1.714e+00   9.827  &lt; 2e-16 ***
+## factor(country_code)ZMB              -1.268e+02  1.842e+00 -68.813  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 72.94 on 350711 degrees of freedom
+##   (396299 observations deleted due to missingness)
+## Multiple R-squared:  0.4612,	Adjusted R-squared:  0.4611 
+## F-statistic:  5266 on 57 and 350711 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+# Math Expressions
+
+The estimated regression model is:
+
+`$$\widehat{MathScore}_i =
+  {354.89} +
+  {0.78} \times Occupation_i +
+  {4.30} \times Education_i +
+  {5.43} \times ICT_i +
+  \alpha_{Country(i)}$$`
 
 ---
 
@@ -160,7 +306,7 @@ glance(model)
 - goes here
 ]
 .pull-right[
-&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" alt="" width="100%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-7-1.png" alt="" width="100%" /&gt;
 ]
 
 ---
@@ -246,13 +392,15 @@ background-size: contain
 
 # Math Expressions
 
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &amp;#36;\alpha+\beta$ renders `\(\alpha+\beta\)`. You can use the display style with double dollar signs:
+The estimated regression model is:
 
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
+`$$\widehat{MathScore}_i =
+  {354.89} +
+  {0.78} \times Occupation_i +
+  {4.30} \times Education_i +
+  {5.43} \times ICT_i +
+  \alpha_{Country(i)}$$`
 
-`$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$`
 
 Limitations:
 
