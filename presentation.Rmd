@@ -31,6 +31,9 @@ library(tidymodels)
 library(palmerpenguins)
 library(knitr)
 library(xaringanthemer)
+library(learningtower)
+library(haven)
+library(ggplot2)
 ```
 
 ```{r setup, include=FALSE}
@@ -111,15 +114,22 @@ class: inverse, center, middle
 
 # Data
 
-- **Source:** student-level data from the PISA 2025 Student Questionnaire, published by the OECD
-- **Size:** 755,721 students from 90 countries/regions (350,769 used in our 2 models)
+**Overview:**
+- Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.
+
+**Data processing:** 
+- **Size:** 755,721 students from 90 countries/regions (747,068 used in visualization, 350,769 used in our 2 linear models)
 - **Explanatory variables:** Highest education of parents in years, Parental occupation, Home ICT resources
-- **Outcome:** mean mathematics score
+---
+
+class: inverse, center, middle
+
+# Visualization
 
 ---
 
 # Overall mathematics performance
-```{r Visualising_overall, echo=FALSE}
+```{r Visualising-overall, echo=FALSE}
 # Calculate the 2.5th and 97.5th percentiles
 ci <- quantile(
   student_processed$math_score,
@@ -167,9 +177,228 @@ ggplot(student_processed, aes(x = math_score)) +
 
 ---
 
-class: inverse, middle, center
+```{r parental-education, echo=FALSE}
+#the relationship between parental education years and mathematics score
+# Prepare data
+education_data <- student_processed %>%
+  drop_na(parental_education_years,
+    math_score) %>%
+  mutate(
+    parental_education = factor(
+      as.numeric(parental_education_years)
+    )
+  )
 
-# Using xaringan
+
+# Violin plot
+ggplot(
+    education_data,
+    aes(
+        x = parental_education,
+        y = math_score
+    )
+) +
+    geom_violin(
+        trim = TRUE,
+        fill = "#DCD6F7",
+        colour = "#7566A8",
+        alpha = 0.8
+    ) +
+    geom_boxplot(
+        width = 0.12,
+        outlier.shape = NA,
+        fill = "white",
+        colour = "#493A70",
+        linewidth = 0.5
+    ) +
+    labs(
+        title = "Parental Education and Mathematics Performance",
+        subtitle = "PISA 2025 Student Data",
+        x = "Highest Education of Parents in Years",
+        y = "Mathematics Score"
+    ) +
+    coord_flip() +
+    theme_minimal()
+```
+
+---
+
+```{r, echo=FALSE}
+#the relationship between highest parental occupational status and mathematics scores
+student_processed|>
+filter(
+    !is.na(highest_parental_occupational_status)
+  ) |>
+ggplot(
+  aes(
+    x = highest_parental_occupational_status,
+    y = math_score
+  )
+) +
+  geom_hex(bins = 50) +
+  scale_fill_gradient(
+    low = "#EFF6FB",
+    high = "#20577F",
+    trans = "log10",
+    name = "Number of students"
+)+
+  labs(
+    title = "Parental Occupational Status and Mathematics Achievement",
+    x = "Family Highest Occupational grade",
+    y = "Mathematics score"
+  ) +
+  theme_minimal()
+```
+
+---
+
+```{r, echo=FALSE}
+#the relationship between ICT and mathematics score
+clean_data <- student_processed |>
+     filter(
+         is.finite(home_ict_resources)
+     ) 
+ ggplot(
+    clean_data,
+    aes(x = home_ict_resources, y = math_score)
+) +
+    
+    stat_summary_bin(
+        fun = mean,
+        bins = 1000,
+        geom = "point",
+        colour = "#F2A6B3",
+        size = 1
+    ) +
+    geom_smooth(
+    method = "gam",
+    colour = "skyblue",
+    linewidth = 1.1, 
+    formula = y ~ s(x, bs = "cs")
+    
+)+
+    labs(
+        title = "Home ICT Resources and Mathematics score",
+        x = "Home ICT Resources Index",
+        y = "Mean Mathematics score in each class"
+    ) +
+    theme_minimal()
+
+```
+---
+
+class: inverse, center, middle
+
+# Findings and related discussion
+
+---
+
+```{r, echo=FALSE}
+#correlation between conditions and math performance
+correlation_data <- student_processed |>
+    select(
+        math_score,
+        highest_parental_occupational_status,
+        parental_education_years,
+        home_ict_resources
+    )
+
+correlation_values <- correlation_data |>
+    summarise(
+        across(
+            -math_score,
+            ~ cor(.x, math_score, use = "complete.obs")
+        )
+    ) |>
+    pivot_longer(
+        everything(),
+        names_to = "Variable",
+        values_to = "Correlation"
+    )
+ggplot(
+    correlation_values,
+    aes(
+        x = "Mathematics Score",
+        y = Variable,
+        fill = Correlation
+    )
+) +
+    geom_tile(
+        colour = "black",
+        linewidth = 0.8
+    ) +
+    geom_text(
+        aes(label = round(Correlation, 2)),
+        size = 4
+    ) +
+    scale_fill_gradient2(
+        low = "#2878B5",
+        mid = "white",
+        high = "#D65F73",
+        midpoint = 0,
+        limits = c(-1, 1),
+        name = "Correlation"
+    ) +
+    labs(
+        title = "Correlation with Mathematics Performance",
+        subtitle = "PISA 2025 Student Data",
+        x = NULL,
+        y = NULL
+    ) +
+    theme_minimal()+
+scale_y_discrete(labels = c(
+    "highest_parental_occupational_status" = "Parental occupation",
+    "parental_education_years" = "Highest education of parents in years",
+    "home_ict_resources" = "Home ICT resources"
+))
+
+```
+
+---
+
+```{r, echo=FALSE}
+# linear regression
+
+model <- linear_reg() |>
+  set_engine("lm") |>
+  fit(
+    math_score ~ highest_parental_occupational_status +
+    parental_education_years +
+    home_ict_resources,
+  data = student_processed
+)
+summary(model$fit)
+```
+
+---
+
+```{r, echo=FALSE}  
+# linear regression with country factor
+model2 <- linear_reg() |>
+  set_engine("lm") |>
+  fit(
+    math_score ~ highest_parental_occupational_status +
+    parental_education_years +
+    home_ict_resources +
+    factor(country_code),
+  data = student_processed
+)
+summary(model2$fit)
+
+```
+
+---
+
+# Math Expressions
+
+The estimated regression model is:
+
+$$\widehat{MathScore}_i =
+  {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
+  \alpha_{Country(i)}$$
 
 ---
 
@@ -282,13 +511,15 @@ background-size: contain
 
 # Math Expressions
 
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
+The estimated regression model is:
 
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
+$$\widehat{MathScore}_i =
+  {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
+  \alpha_{Country(i)}$$
 
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
 
 Limitations:
 
