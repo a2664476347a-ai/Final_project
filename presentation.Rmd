@@ -92,6 +92,28 @@ style_xaringan(
 )
 ```
 
+```{css, echo=FALSE}
+.toc-item{display: flex;
+          align-items: baseline;
+          margin-bottom: 1.5em;
+}
+.toc-dots{flex: 1;
+          border-bottom: 2px dotted #555;
+          margin: 0 0.5em 0 0.5em
+
+}
+```
+
+# Outline
+
+<div class="toc-item"><span>1. Research question</span><span class="toc-dots"></span><span>3</span></div>
+<div class="toc-item"><span>2. Data</span><span class="toc-dots"></span><span>4</span></div>
+<div class="toc-item"><span>3. Visualization</span><span class="toc-dots"></span><span>7</span></div>
+<div class="toc-item"><span>4. Findings and related discussion</span><span class="toc-dots"></span><span>12</span></div>
+<div class="toc-item"><span>5. Conclusions</span><span class="toc-dots"></span><span>?</span></div>
+
+---
+
 class: middle
 
 ## Research question
@@ -102,7 +124,7 @@ class: middle
 
 **Why it matters**
 
-- Students' home environments may play an important role in their educational outcomes. Investigating these relationships can help us better understand how family background relates to educational achievement.
+- Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.
 
 ---
 
