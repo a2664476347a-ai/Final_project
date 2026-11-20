@@ -99,23 +99,63 @@ If you got your data off the web, make sure to state the retrieval date.
 ### Data citation
 The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.
 
-## Findings
+## Analysis
 
-The write-up of your project and findings go here. 
+Of the 755,721 students included in the questionnaire dataset, 747,068 remained after removing those whose mathematics scores were missing. In turn, this dropped the number of represented countries in the dataset from 90 to 89, as Uzbekistan ('UZB')'s mathematics scores are completely missing. According to the official results report, both mathematics and reading scores were omitted for Uzbekistan due to "a number of inconsistencies ... that require further investigation" (OECD, 2026). These account for 8562 of the removed rows, and the remaining one corresponds to a Belgian ('BEL') student whose mathematics scores are also missing (Student ID 05608066).
 
-Think of this as the text of your presentation with some extra detail to cover what there was not time to discuss in the presentation. This might include any assumptions you made when doing your analysis, any limitations of the work you have done or any ideas you have for future work. Feel free to split this section into subsections to make it easier to read. 
+As a preliminary analysis, we used the processed dataset to visualize the distribution of students' mathematics scores, as seen in Figure 1.
 
-The length should be roughly 1,500 words. 
-If you want to use a word count addin, you can install this by copying and pasting the following into RStudio:
+### **Figure 1**
 
-`devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)`
+```{r echo=FALSE}
+# Calculate the 2.5th and 97.5th percentiles
+ci <- quantile(
+  student_processed$math_score,
+  probs = c(0.025, 0.975)
+)
 
-You will then need to restart RStudio. Once you have done that, select the text you want to count the words of, go to Addins, and select the `Word count` addin.
-This addin counts words using two different algorithms, but the results should be similar and as long as you're in the ballpark of 1,500 words, you're good! 
-The addin will ignore code chunks and only count the words in prose. If you don't want to use the addin you can always copy and paste the text into Microsoft Word to do a Word Count!
+ggplot(student_processed, aes(x = math_score)) +
+  geom_histogram(
+    bins = 50,
+    fill = "steelblue",
+    color = "white"
+  ) +
+  geom_vline(
+    xintercept = ci,
+    color = "#D98282",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  annotate(
+    "text",
+    x = ci[1],
+    y = Inf,
+    label = paste0("2.5%: ", round(ci[1], 2)),
+    color = "#D98282",
+    vjust = 1.5,
+    size = 3.5
+  ) +
+  annotate(
+    "text",
+    x = ci[2],
+    y = Inf,
+    label = paste0("97.5%: ", round(ci[2], 2)),
+    color = "#D98282",
+    vjust = 1.5,
+    size = 3.5
+  ) +
+  labs(
+    title = "Distribution of Mathematics Scores",
+    subtitle = "Central 95% of Mathematics Scores | PISA 2025",
+    x = "Mathematics Score",
+    y = "Number of Students"
+  ) +
+  theme_minimal()
+```
 
-You can also load your data here and present any analysis results / plots.
-Make sure to hide your code with  `echo = FALSE` unless the point you are trying to make is about the code itself, in which case you should show your code.
+*Note.* This figure is a frequency histogram showing the distribution of mathematics scores across the PISA 2025 dataset.
+
+
 
 *This is a template; you can use it if you're at a loss for ideas(by Junyi).*
 ###Overall mathematics performance
@@ -134,8 +174,14 @@ Make sure to hide your code with  `echo = FALSE` unless the point you are trying
 ###conclusion
 
 
+
+
 ## References
 
-Organisation for Economic Co-operation and Development. (n.d.). *PISA 2025 student questionnaire data file* [Data set]. Retrieved October 28, 2026, from https://webfs.oecd.org/pisa2022/index.html
+Jerrim, J. & Zieger, L. (2024). How robust are socio-economic achievement gradients using PISA data? A case study from Germany. British Educational Research Journal, 50, 438–453. https://doi.org/10.1002/berj.3934
+
+OECD. (n.d.). *PISA 2025 student questionnaire data file* [Data set]. Retrieved October 28, 2026, from https://webfs.oecd.org/pisa2022/index.html
+
+OECD (2026), PISA 2025 Results (Volume I): Future-Ready Students, PISA, OECD Publishing, Paris, https://doi.org/10.1787/73451bc5-en. 
 
 
