@@ -114,28 +114,37 @@ class: inverse, center, middle
 
 # Data
 
-**Original dataset:**
-- Source: PISA 2025 Student Questionnaire (OECD)
-- 755,721 students from 90 countries/economies
-- 24 original variables
-- Included student information, family background, home resources and 10 mathematics plausible values (PV1–PV10).
 
-**Data cleaning and processing:**
-- Removed `general_family_support` due to a high proportion of missing values (82.51%).
-- Excluded students with missing values in any of the 10 mathematics PVs.
-- Retained 747,068 student records after mathematics score filtering.
-- Selected variables relevant to the research question.
-- Calculated each student's mean of the 10 PVs as `math_score` for exploratory analysis.
-- Removed the original 10 PV columns, leaving 12 variables in the processed dataset.
+**Original data:**
+- 755,721 students from 90 countries/regions
+- 24 variables
+- Included student information, family background, home resources and mathematics scores.
+
+**Data cleaning:**
+- Checked the data using `summary()`.
+- Removed `general_family_support` because about 82.5% of its values were missing.
+- Removed students with missing values in any of the 10 mathematics scores.
+- Kept 747,068 students after this step.
+
+**Preparing the data:**
+- Selected variables related to our research question.
+- Calculated the average of the 10 mathematics scores for each student.
+- Created a new variable called `math_score`.
+- Kept 12 variables in the final processed dataset.
+
+---
 
 **Main variables:**
-- Explanatory variables: Parental education years, parental occupational status and home ICT resources.
-- Outcome variable: Mathematics score (`math_score`).
+- Parental education
+- Parental occupational status
+- Home ICT resources
+- Mathematics score
 
-**For subsequent analysis:**
-- 747,068 records after mathematics score filtering.
-- 350,769 complete observations in each of the two regression models.
-- Additional missing values were handled separately for individual visualisations and analyses.
+**For analysis:**
+- 747,068 students after mathematics score filtering.
+- 350,769 complete observations in each regression model.
+- Missing values in other variables were handled when needed for each analysis.
+
 ---
 
 class: inverse, center, middle

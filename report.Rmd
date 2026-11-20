@@ -90,31 +90,33 @@ If you got your data off the web, make sure to state the retrieval date.
 
 ### Key variables
 
-The investigation centres on four main groups of variables.
+Our investigation focuses on three main factors that may be related to students' mathematics performance.
 
-Mathematics performance: the original dataset has ten mathematics plausible values (`math_score_pv1` to `math_score_pv10`). For the exploratory analysis I combined them with the row-wise mean to create `math_score`, which is simply the average of the ten values for each student.
+Mathematics performance: The original dataset contains ten mathematics scores for each student. We calculated their average to create a new variable called math_score for our exploratory analysis.
 
-Parental education: two variables were kept, `highest_parental_education`, which records the highest category of parental education, and `parental_education_years`, the number of years of parental education. The latter feeds the parental education visualisation and the regression analysis.
+Parental education: We use parental_education_years to show the number of years of education completed by parents. We also kept highest_parental_education in the dataset.
 
-Parental occupational status: `highest_parental_occupational_status` records the highest occupational status reported for a student's parents. I used it to see whether parents' occupational circumstances are associated with students' mathematics performance.
+Parental occupational status: We use highest_parental_occupational_status to examine whether parents' occupational status is related to students' mathematics performance.
 
-Home ICT resources: `home_ict_resources` measures the ICT resources students have at home. It went into the question of how access to home ICT relates to mathematics performance.
+Home ICT resources: We use home_ict_resources to represent the ICT resources available at home.
 
-A few other variables — student age, gender, country code, family socioeconomic status and home possessions — stayed in the dataset to give extra background on students and their homes.
+Other variables, such as student age, gender, country, family socioeconomic status and home possessions, were also kept to provide more information about students' backgrounds.
 
 ### Data processing
 
-The original file holds 755,721 student records and 24 variables across 90 countries and economies. Each row is one student, each column one variable. Before any cleaning I ran `summary()` over the file to look at each variable and see where values were missing.
+The original dataset contained 755,721 students from 90 countries and 24 variables. We first used the summary() function in R to check the data and find missing values.
 
-Several variables had missing observations. `general_family_support` was the worst case, with 623,576 missing values, about 82.51% of the dataset. It was not central to the research question, so I dropped it with `select()`. Each of the ten mathematics plausible-value variables was missing 8,653 observations. So that every retained student had a full set of mathematics scores, rows with a missing value in any of the ten variables were removed using `filter()` and `if_all()`.
+We found that general_family_support had about 82.5% missing values. Since it was not important for our main research question, we removed this variable.
 
-`select()` was then used again to keep what the investigation needed: student information, parental education, parental occupational status, home learning resources and the family background indicators.
+Each of the ten mathematics score variables also had 8,653 missing values. We removed students who had a missing value in any of these ten variables. After this step, 747,068 student records remained.
 
-To simplify the exploratory stage, `mutate()`, `across()` and `rowMeans()` were used to average the ten plausible values into a new variable, `math_score`, and the ten original columns were dropped from the simplified dataset. The resulting `student_processed` dataset has 12 variables and one row per retained student.
+Next, we selected the variables needed for our research, including student information, parental education, parental occupational status and home learning resources.
 
-The remaining missing values in the family background variables were not stripped out of the whole dataset at this stage. Instead, observations were filtered to suit each analysis. Missing parental education years, for instance, were excluded when the parental education visualisation was prepared, while the other visualisations excluded missing occupational status and non-finite ICT values respectively. The correlation analysis used complete observations on the two variables being compared, and the regression model used rows that were complete on all included variables.
+To make the data easier to use, we calculated the average of the ten mathematics scores for each student using rowMeans(). We created a new variable called math_score and then removed the original ten score columns. The final processed dataset contained 12 variables, with one row for each student.
 
-The result is a smaller, more workable dataset that still carries the variables needed to answer the research question. With one mathematics score and the selected family background variables, it was possible to draw histograms, violin plots, hexagonal binning plots and smoothed trend curves, then run the correlation and regression analyses on the links between family background and mathematics performance.
+We did not remove all missing values from the other family background variables at this stage. Instead, we removed missing observations when needed for individual visualisations and analyses. For example, the two regression models each used 350,769 complete observations.
+
+These steps helped us prepare a smaller and more organised dataset. It made it easier to create graphs and explore the relationships between parental education, parental occupational status, home ICT resources and mathematics performance.
 
 ### Data citation
 The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.
