@@ -129,7 +129,9 @@ Make sure to hide your code with  `echo = FALSE` unless the point you are trying
 
 ###Correlation and regression analysis
 
-###Discussion(maybe + conclusion?)
+###Discussion
+
+###conclusion
 
 
 ## References
