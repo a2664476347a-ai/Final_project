@@ -64,12 +64,28 @@ class: inverse, center, middle
 
 # Data
 
-**Overview:**
-- Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.
+**Original dataset:**
+- Source: PISA 2025 Student Questionnaire (OECD)
+- 755,721 students from 90 countries/economies
+- 24 original variables
+- Included student information, family background, home resources and 10 mathematics plausible values (PV1–PV10).
 
-**Data processing:** 
-- **Size:** 755,721 students from 90 countries/regions (747,068 used in visualization, 350,769 used in our 2 linear models)
-- **Explanatory variables:** Highest education of parents in years, Parental occupation, Home ICT resources
+**Data cleaning and processing:**
+- Removed `general_family_support` due to a high proportion of missing values (82.51%).
+- Excluded students with missing values in any of the 10 mathematics PVs.
+- Retained 747,068 student records after mathematics score filtering.
+- Selected variables relevant to the research question.
+- Calculated each student's mean of the 10 PVs as `math_score` for exploratory analysis.
+- Removed the original 10 PV columns, leaving 12 variables in the processed dataset.
+
+**Main variables:**
+- Explanatory variables: Parental education years, parental occupational status and home ICT resources.
+- Outcome variable: Mathematics score (`math_score`).
+
+**For subsequent analysis:**
+- 747,068 records after mathematics score filtering.
+- 350,769 complete observations in each of the two regression models.
+- Additional missing values were handled separately for individual visualisations and analyses.
 ---
 
 class: inverse, center, middle
