@@ -114,6 +114,13 @@ class: inverse, center, middle
 
 # Data
 
+**Dataset overview:**
+- Student-level data from the PISA 2025 Student Questionnaire (OECD)
+- 755,721 students · 90 countries and economies · 24 variables
+- Used to examine the link between family background and mathematics achievement
+- Citation: OECD (n.d.) *PISA 2025 Student Questionnaire*. Retrieved [date]
+
+---
 
 **Original data:**
 - 755,721 students from 90 countries/regions
@@ -121,30 +128,16 @@ class: inverse, center, middle
 - Included student information, family background, home resources and mathematics scores.
 
 **Data cleaning:**
-- Checked the data using `summary()`.
-- Removed `general_family_support` because about 82.5% of its values were missing.
-- Removed students with missing values in any of the 10 mathematics scores.
-- Kept 747,068 students after this step.
+- **Starting point:** the data file and the student questionnaire; the questionnaire was set aside and everything is based on the 755,721 student rows in `student_math`
+- **Check:** `summary()` in R to identify missing values
+- **Exclude:** Uzbekistan (all of its records) and Belgium (one record)
+- **Filter missing values:** 8,653 missing per score variable → 747,068 records remain
+- **Select:** maths scores, parental education, parental occupational status, home ICT resources
+- **Combine:** `rowMeans()` average of the ten scores → `math_score`; the ten original columns removed
+- **Remaining missing values:** not removed at this stage, but excluded as each visualisation or analysis needs them
 
-**Preparing the data:**
-- Selected variables related to our research question.
-- Calculated the average of the 10 mathematics scores for each student.
-- Created a new variable called `math_score`.
-- Kept 12 variables in the final processed dataset.
-
----
-
-**Main variables:**
-- Parental education
-- Parental occupational status
-- Home ICT resources
-- Mathematics score
-
-**For analysis:**
-- 747,068 students after mathematics score filtering.
-- 350,769 complete observations in each regression model.
-- Missing values in other variables were handled when needed for each analysis.
-
+*Result: `student_math` 755,721 × 24 → `student_math_pro` 747,068 × 23 (after dropping `general_family_support`) → `student_processed` 747,068 × 12 (ten plausible values became one `math_score`)*
+   
 ---
 
 class: inverse, center, middle
