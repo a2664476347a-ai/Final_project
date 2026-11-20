@@ -1,9 +1,9 @@
 ---
-title: "Presentation title"
-subtitle: "Presentation subtitle (if any)"
+title: "Family Background and Mathematics Performance"
+subtitle: "Evidence from PISA 2025"
 author: "α-R <br> Junyi Mao, Pang-Qiyu, Ziqiao Zhou, Ali Hamzeh & Yachen Wang"
 institute: "University of Edinburgh"
-date: "`r Sys.Date()`"
+date: "4 December 2026"
 output:
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -40,6 +40,44 @@ knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 6, fig.asp = 0.618,
 
 ```{r load-data, include=FALSE}
 # Load your data here
+# Load data set
+student_math <- read_rds("data/student_math.rds")
+
+# Remove unnecessary columns and missing mathematics scores
+student_math_pro <- student_math |>
+  select(-general_family_support) |>
+  filter(
+    if_all(
+      starts_with("math_score_pv"),
+      ~ !is.na(.)
+    )
+  )
+
+# Select variables for the investigation
+student_processed <- student_math_pro |>
+  select(
+    student_id,
+    country_code,
+    student_age,
+    student_gender,
+    family_socioeconomic_status,
+    family_support,
+    home_possessions_index,
+    home_ict_resources,
+    highest_parental_education,
+    parental_education_years,
+    highest_parental_occupational_status,
+    starts_with("math_score_pv")
+  )
+
+# Calculate mean mathematics score
+student_processed <- student_processed |>
+  mutate(
+    math_score = rowMeans(
+      across(starts_with("math_score_pv"))
+    )
+  ) |>
+  select(-starts_with("math_score_pv"))
 
 ```
 
@@ -51,23 +89,81 @@ style_xaringan(
 )
 ```
 
-class: center, middle
+class: middle
 
-## A statement of the overall goal / research question
+## Research question
+
+**How are parental education, parental occupational status, and home ICT resources associated with students’ mathematics performance in PISA 2025?**
+
+--
+
+**Why it matters**
+
+- Students' home environments may play an important role in their educational outcomes. Investigating these relationships can help us better understand how family background relates to educational achievement.
 
 ---
 
 class: inverse, center, middle
 
-# Section title
+# Data
 
 ---
 
-# Hello World
+# Data
 
-- Click the `Knit` button to compile your presentation
+- **Source:** student-level data from the PISA 2025 Student Questionnaire, published by the OECD
+- **Size:** 755,721 students from 90 countries/regions (350,769 used in our 2 models)
+- **Explanatory variables:** Highest education of parents in years, Parental occupation, Home ICT resources
+- **Outcome:** mean mathematics score
 
-- Make sure to commit and push all resulting files to your GitHub repo
+---
+
+# Overall mathematics performance
+```{r Visualising_overall, echo=FALSE}
+# Calculate the 2.5th and 97.5th percentiles
+ci <- quantile(
+  student_processed$math_score,
+  probs = c(0.025, 0.975)
+)
+
+ggplot(student_processed, aes(x = math_score)) +
+  geom_histogram(
+    bins = 50,
+    fill = "steelblue",
+    color = "white"
+  ) +
+  geom_vline(
+    xintercept = ci,
+    color = "#D98282",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  annotate(
+    "text",
+    x = ci[1],
+    y = Inf,
+    label = paste0("2.5%: ", round(ci[1], 2)),
+    color = "#D98282",
+    vjust = 1.5,
+    size = 3.5
+  ) +
+  annotate(
+    "text",
+    x = ci[2],
+    y = Inf,
+    label = paste0("97.5%: ", round(ci[2], 2)),
+    color = "#D98282",
+    vjust = 1.5,
+    size = 3.5
+  ) +
+  labs(
+    title = "Distribution of Mathematics Scores",
+    subtitle = "Central 95% of Mathematics Scores | PISA 2025",
+    x = "Mathematics Score",
+    y = "Number of Students"
+  ) +
+  theme_minimal()
+```
 
 ---
 
