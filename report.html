@@ -411,36 +411,28 @@ more information about students’ backgrounds.</p>
 the student questionnaire. We worked from the data file only, so the
 questionnaire was set aside and everything below is based on the 755,721
 student rows in <code>student_math</code>.</p>
-<p>That data file contained 755,721 students from 90 countries and 24
-variables. We first used <code>summary()</code> in R to check the data
-and identify missing values.</p>
-<p>During data checking we found two countries whose data could not be
-used for our analysis, so we excluded them: Uzbekistan (all of its
-records) and Belgium (one record).</p>
-<p>Each of the ten mathematics score variables also had 8,653 missing
-values. We removed students who had a missing value in any of these ten
-variables. After this step, 747,068 student records remained.</p>
-<p>Next, we selected the variables needed for our research: mathematics
-scores, parental education, parental occupational status and home ICT
-resources.</p>
+<p>We first used <code>summary()</code> in R to check the data and
+identify missing values. Mathematics scores were missing for two
+countries, so we excluded them: Uzbekistan (all of its records) and
+Belgium (one record). That took out 8,653 records, leaving 747,068
+students.</p>
 <p>To make the data easier to use, we calculated the average of the ten
 mathematics scores for each student using <code>rowMeans()</code>. We
 created a new variable called <code>math_score</code> and then removed
 the original ten score columns.</p>
+<p>We then selected the variables needed for our research: mathematics
+scores, parental education, parental occupational status and home ICT
+resources.</p>
 <p>We did not remove all missing values from the other variables at this
 stage. Instead, we excluded missing observations when needed for
-individual visualisations and analyses.</p>
-<p>The table sets the three datasets against the original file:
-<code>student_math</code> (755,721 rows, 24 variables),
-<code>student_math_pro</code> (747,068 rows, 23 variables after dropping
-<code>general_family_support</code>), and <code>student_processed</code>
-(747,068 rows, 12 variables after the ten plausible values became one
-<code>math_score</code>). The rows settle at 747,068 while the columns
-fall from 24 to 12</p>
-<p>These steps helped us prepare the data for our research. The
-processed data was easier to use for creating graphs and exploring the
-relationships between parental education, parental occupational status,
-home ICT resources and mathematics performance.</p>
+individual visualisations and analyses, so that each analysis kept as
+many students as its own variables allowed, rather than losing rows it
+did not use.</p>
+<p>The table sets the processed data against the original file:
+<code>student_math</code> (755,721 rows, 24 variables) and
+<code>student_processed</code> (747,068 rows, 12 variables, after
+irrelevant variables were dropped and the ten plausible values became
+one <code>math_score</code>).</p>
 </div>
 <div id="data-citation" class="section level3">
 <h3>Data citation</h3>

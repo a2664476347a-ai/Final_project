@@ -144,21 +144,14 @@ class: inverse, center, middle
 
 ---
 
-**Original data:**
-- 755,721 students from 90 countries/regions
-- 24 variables
-- Included student information, family background, home resources and mathematics scores.
+- **Data file only:** the questionnaire was set aside
+- **Check:** `summary()` in R → missing values identified
+- **Exclude:** Uzbekistan (all records) and Belgium (one record); their mathematics scores were missing, so 8,653 records went and 747,068 remain
+- **Combine:** `rowMeans()` of the ten scores → `math_score`, ten original columns removed
+- **Select:** mathematics scores, parental education, parental occupational status, home ICT resources
+- **Remaining missing values:** excluded as each visualisation or analysis needs them, so no analysis loses rows it does not use
 
-**Data cleaning:**
-- **Starting point:** the data file and the student questionnaire; the questionnaire was set aside and everything is based on the 755,721 student rows in `student_math`
-- **Check:** `summary()` in R to identify missing values
-- **Exclude:** Uzbekistan (all of its records) and Belgium (one record)
-- **Filter missing values:** 8,653 missing per score variable → 747,068 records remain
-- **Select:** maths scores, parental education, parental occupational status, home ICT resources
-- **Combine:** `rowMeans()` average of the ten scores → `math_score`; the ten original columns removed
-- **Remaining missing values:** not removed at this stage, but excluded as each visualisation or analysis needs them
-
-*Result: `student_math` 755,721 × 24 → `student_math_pro` 747,068 × 23 (after dropping `general_family_support`) → `student_processed` 747,068 × 12 (ten plausible values became one `math_score`)*
+Result strip:`student_math` 755,721 × 24 → `student_processed` 747,068 × 12
    
 ---
 

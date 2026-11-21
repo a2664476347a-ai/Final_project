@@ -106,21 +106,15 @@ Other variables, such as student age, gender, country, family socioeconomic stat
 
 Our starting material came in two parts: the PISA 2025 data file and the student questionnaire. We worked from the data file only, so the questionnaire was set aside and everything below is based on the 755,721 student rows in `student_math`.
 
-That data file contained 755,721 students from 90 countries and 24 variables. We first used `summary()` in R to check the data and identify missing values.
-
-During data checking we found two countries whose data could not be used for our analysis, so we excluded them: Uzbekistan (all of its records) and Belgium (one record).
-
-Each of the ten mathematics score variables also had 8,653 missing values. We removed students who had a missing value in any of these ten variables. After this step, 747,068 student records remained.
-
-Next, we selected the variables needed for our research: mathematics scores, parental education, parental occupational status and home ICT resources.
+We first used `summary()` in R to check the data and identify missing values. Mathematics scores were missing for two countries, so we excluded them: Uzbekistan (all of its records) and Belgium (one record). That took out 8,653 records, leaving 747,068 students.
 
 To make the data easier to use, we calculated the average of the ten mathematics scores for each student using `rowMeans()`. We created a new variable called `math_score` and then removed the original ten score columns.
 
-We did not remove all missing values from the other variables at this stage. Instead, we excluded missing observations when needed for individual visualisations and analyses.
+We then selected the variables needed for our research: mathematics scores, parental education, parental occupational status and home ICT resources.
 
-The table sets the three datasets against the original file: `student_math` (755,721 rows, 24 variables), `student_math_pro` (747,068 rows, 23 variables after dropping `general_family_support`), and `student_processed` (747,068 rows, 12 variables after the ten plausible values became one `math_score`). The rows settle at 747,068 while the columns fall from 24 to 12
+We did not remove all missing values from the other variables at this stage. Instead, we excluded missing observations when needed for individual visualisations and analyses, so that each analysis kept as many students as its own variables allowed, rather than losing rows it did not use.
 
-These steps helped us prepare the data for our research. The processed data was easier to use for creating graphs and exploring the relationships between parental education, parental occupational status, home ICT resources and mathematics performance.
+The table sets the processed data against the original file: `student_math` (755,721 rows, 24 variables) and `student_processed` (747,068 rows, 12 variables, after irrelevant variables were dropped and the ten plausible values became one `math_score`).
 
 ### Data citation
 The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.
