@@ -395,6 +395,7 @@ scale_y_discrete(labels = c(
 ```
 
 ---
+The estimated regression model is:
 
 ```{r, echo=FALSE}
 # linear regression
@@ -407,10 +408,21 @@ model <- linear_reg() |>
     home_ict_resources,
   data = student_processed
 )
-summary(model$fit)
+lm_model <- model$fit
+
+# Display R-squared
+cat("\nR-squared:",
+    round(summary(lm_model)$r.squared, 3))
 ```
+$$\widehat{MathScore}_i =
+  {`r model$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i$$
 
 ---
+The estimated regression model is:
+
 
 ```{r, echo=FALSE}  
 # linear regression with country factor
@@ -423,22 +435,20 @@ model2 <- linear_reg() |>
     factor(country_code),
   data = student_processed
 )
-summary(model2$fit)
+lm_model2 <- model2$fit
+
+# Display R-squared
+cat("\nR-squared:",
+    round(summary(lm_model2)$r.squared, 3))
 
 ```
-
----
-
-# Math Expressions
-
-The estimated regression model is:
-
 $$\widehat{MathScore}_i =
   {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
   {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
   {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
   {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
   \alpha_{Country(i)}$$
+
 
 ---
 

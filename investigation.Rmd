@@ -322,11 +322,9 @@ summary(model2$fit)
 
 The estimated regression model is:
 
-$$
-\widehat{MathScore}_i =
+$$\widehat{MathScore}_i =
   {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
   {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
   {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
   {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
-  \alpha_{Country(i)}
-$$
+  \alpha_{Country(i)$$
