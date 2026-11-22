@@ -63,6 +63,15 @@ student_processed <- student_processed |>
   ) |>
   select(-starts_with("math_score_pv"))
 
+# Calculate statistics
+score_stats <- student_processed %>%
+  filter(!is.na(math_score)) %>%
+  summarise(
+    mean_score = mean(math_score),
+    median_score = median(math_score),
+    q1 = quantile(math_score, 0.25),
+    q3 = quantile(math_score, 0.75)
+  )
 
 ```
 
@@ -176,6 +185,154 @@ ggplot(student_processed, aes(x = math_score)) +
 *Note.* This figure is a frequency histogram showing the distribution of mathematics scores across the PISA 2025 dataset.
 
 
+
+
+From the histogram in Figure 1, we observed a unimodal distribution of mathematics scores across students, with a noticeably strong right skew. This shows that most of the data points (ie., individual students' mathematics scores) were below the mean, which is reflected by the mean (`r score_stats$mean_score %>% sprintf(fmt='%.2f')`) being greater than the median (`r score_stats$median_score %>% sprintf(fmt='%.2f')`). 
+
+After analyzing the overall data, we moved on to explore the individual variables' relationship with mathematics score, starting with parental education (measured as the highest number of years of education attained by either parent). This data was divided into five levels (6, 9, 12, 14, 16) in PISA 2025, determined using the ISCED international standard (OECD, 2026).
+
+Figure 2 shows a visualization of distribution of mathematics scores across these five groups. The plot suggests a possible positive correlation between students' mathematics scores and parental education years.
+
+### **Figure 2**
+
+```{r parental_education, echo=FALSE}
+#the relationship between parental education years and mathematics score
+# Prepare data
+education_data <- student_processed %>%
+  drop_na(parental_education_years,
+    math_score) %>%
+  mutate(
+    parental_education = factor(
+      as.numeric(parental_education_years)
+    )
+  )
+
+
+# Violin plot
+ggplot(
+    education_data,
+    aes(
+        x = parental_education,
+        y = math_score
+    )
+) +
+    geom_violin(
+        trim = TRUE,
+        fill = "#DCD6F7",
+        colour = "#7566A8",
+        alpha = 0.8
+    ) +
+    geom_boxplot(
+        width = 0.12,
+        outlier.shape = NA,
+        fill = "white",
+        colour = "#493A70",
+        linewidth = 0.5
+    ) +
+    labs(
+        title = "Parental Education and Mathematics Performance",
+        subtitle = "PISA 2025 Student Data",
+        x = "Highest Education of Parents in Years",
+        y = "Mathematics Score"
+    ) +
+    coord_flip() +
+    theme_minimal()
+```
+
+*Note.* This figure is a violin plot combined with boxplots, showing the distribution of mathematics scores for each level of highest parental education, in the PISA 2025 dataset.
+
+
+
+
+The next variable analyzed in relation to mathematics performance was highest parental occupational status, visualized as a hexagonal bin plot with a linear regression line in Figure 3. Similarly to the parental education analysis, we observed an apparent positive correlation with mathematics performance.
+
+### **Figure 3**
+
+```{r main2, echo=FALSE}
+#the relationship between highest parental occupational status and mathematics scores
+student_processed|>
+filter(
+    !is.na(highest_parental_occupational_status)
+  ) |>
+ggplot(
+  aes(
+    x = highest_parental_occupational_status,
+    y = math_score
+  )
+) +
+  geom_hex(bins = 100) +
+  scale_fill_gradientn(
+  colours = c(
+    "#E2E3FF",
+    "#5968E8",
+    "#1049F8",
+    "#171D85"
+  ),
+  trans = "log10",
+  name = "Number of students"
+) +
+    geom_smooth(
+  method = "lm",
+  formula = y ~ x,
+  colour = "#C065EE",
+  linewidth = 1,
+  se = TRUE
+)+
+  labs(
+    title = "Parental Occupational Status and Mathematics Achievement",
+    x = "Family Highest Occupational grade",
+    y = "Mathematics score"
+  ) +
+  theme_minimal()
+```
+
+*Note.* This figure is a hexagon bin plot with a simple least-squares linear regression line added, showing the distribution of mathematics scores across family highest occupational grade in the PISA 2025 dataset. Note that the color for number of students is base-10 logarithmic.
+
+
+
+The third variable we explored was home ICT resources, representing the relative amount of access each student has to information and communications technology resources at home (OECD, 2026). We visualized the relationship between home ICT resources and mathematics performance via a binned scatterplot, as seen in Figure 4. Here, the trend is more complex, as depicted via the generalized additive model (GAM) smoothing line, and there appears to be a peak of some sort between the values of 0 and 1.5 for home ICT resources index.
+
+### **Figure 4**
+
+```{r main3, echo=FALSE}
+#the relationship between ICT and mathematics score
+clean_data <- student_processed |>
+     filter(
+         is.finite(home_ict_resources)
+     ) 
+ ggplot(
+    clean_data,
+    aes(x = home_ict_resources, y = math_score)
+) +
+    
+    stat_summary_bin(
+        fun = mean,
+        bins = 1000,
+        geom = "point",
+        colour = "#F2A6B3",
+        size = 1
+    ) +
+    geom_smooth(
+    method = "gam",
+    colour = "skyblue",
+    linewidth = 1.1
+)+
+    labs(
+        title = "Home ICT Resources and Mathematics score",
+        x = "Home ICT Resources Index",
+        y = "Mean Mathematics score in each class"
+    ) +
+    theme_minimal()
+
+```
+
+*Note.* This figure shows a binned scatter plot (mean mathematics score plotted for each of 1000 home ICT resources index bins) with a GAM smoothing line shown in blue.
+
+
+
+### Limitations
+
+The most significant limitation of the data across variables was its student-reported nature: for example, students were expected to report their parents' highest level of education. However, past studies conducted on previous iterations of PISA, in which parents were also asked to report their education levels (this was not a part of the 2025 questionnaires), found large discrepancies between student and parents' responses (Jerrim et al., 2024).
 
 *This is a template; you can use it if you're at a loss for ideas(by Junyi).*
 ###Overall mathematics performance
