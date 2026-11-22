@@ -11,7 +11,7 @@
 
 <meta name="author" content="by α-R: Junyi Mao, Pang-Qiyu, Ziqiao Zhou, Ali Hamzeh &amp; Yachen Wang" />
 
-<meta name="date" content="2026-11-20" />
+<meta name="date" content="2026-11-21" />
 
 <title>Family Background and Mathematics Performance in PISA 2025</title>
 
@@ -354,7 +354,7 @@ display: none;
 Performance in PISA 2025</h1>
 <h4 class="author">by α-R: Junyi Mao, Pang-Qiyu, Ziqiao Zhou, Ali Hamzeh
 &amp; Yachen Wang</h4>
-<h4 class="date">2026-11-20</h4>
+<h4 class="date">2026-11-21</h4>
 
 </div>
 
@@ -389,11 +389,50 @@ investigate the associations between family circumstances and academic
 achievement (OECD, n.d.).</em></p>
 <div id="key-variables" class="section level3">
 <h3>Key variables</h3>
-<p>介绍数学成绩、父母教育、职业地位和家庭 ICT 资源等变量。</p>
+<p>Our investigation focuses on three main factors that may be related
+to students’ mathematics performance.</p>
+<p>Mathematics performance: math_score represents each student’s
+mathematics performance.</p>
+<p>Parental education: We use parental_education_years to show the
+number of years of education completed by parents. We also kept
+highest_parental_education in the dataset.</p>
+<p>Parental occupational status: We use
+highest_parental_occupational_status to examine whether parents’
+occupational status is related to students’ mathematics performance.</p>
+<p>Home ICT resources: We use home_ict_resources to represent the ICT
+resources available at home.</p>
+<p>Other variables, such as student age, gender, country, family
+socioeconomic status and home possessions, were also kept to provide
+more information about students’ backgrounds.</p>
 </div>
 <div id="data-processing" class="section level3">
 <h3>Data processing</h3>
-<p>介绍缺失值处理、变量筛选和数学成绩计算。</p>
+<p>Our starting material came in two parts: the PISA 2025 data file and
+the student questionnaire. We worked from the data file only, so the
+questionnaire was set aside and everything below is based on the 755,721
+student rows in <code>student_math</code>.</p>
+<p>We first used <code>summary()</code> in R to check the data and
+identify missing values. Mathematics scores were missing for two
+countries, so we excluded them: Uzbekistan (all of its records) and
+Belgium (one record). That took out 8,653 records, leaving 747,068
+students.</p>
+<p>To make the data easier to use, we calculated the average of the ten
+mathematics scores for each student using <code>rowMeans()</code>. We
+created a new variable called <code>math_score</code> and then removed
+the original ten score columns.</p>
+<p>We then selected the variables needed for our research: mathematics
+scores, parental education, parental occupational status and home ICT
+resources.</p>
+<p>We did not remove all missing values from the other variables at this
+stage. Instead, we excluded missing observations when needed for
+individual visualisations and analyses, so that each analysis kept as
+many students as its own variables allowed, rather than losing rows it
+did not use.</p>
+<p>The table sets the processed data against the original file:
+<code>student_math</code> (755,721 rows, 24 variables) and
+<code>student_processed</code> (747,068 rows, 12 variables, after
+irrelevant variables were dropped and the ten plausible values became
+one <code>math_score</code>).</p>
 </div>
 <div id="data-citation" class="section level3">
 <h3>Data citation</h3>

@@ -92,6 +92,28 @@ style_xaringan(
 )
 ```
 
+```{css, echo=FALSE}
+.toc-item{display: flex;
+          align-items: baseline;
+          margin-bottom: 1.5em;
+}
+.toc-dots{flex: 1;
+          border-bottom: 2px dotted #555;
+          margin: 0 0.5em 0 0.5em
+
+}
+```
+
+# Outline
+
+<div class="toc-item"><span>1. Research question</span><span class="toc-dots"></span><span>3</span></div>
+<div class="toc-item"><span>2. Data</span><span class="toc-dots"></span><span>4</span></div>
+<div class="toc-item"><span>3. Visualization</span><span class="toc-dots"></span><span>7</span></div>
+<div class="toc-item"><span>4. Findings and related discussion</span><span class="toc-dots"></span><span>12</span></div>
+<div class="toc-item"><span>5. Conclusions</span><span class="toc-dots"></span><span>?</span></div>
+
+---
+
 class: middle
 
 ## Research question
@@ -102,7 +124,7 @@ class: middle
 
 **Why it matters**
 
-- Students' home environments may play an important role in their educational outcomes. Investigating these relationships can help us better understand how family background relates to educational achievement.
+- Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.
 
 ---
 
@@ -114,12 +136,23 @@ class: inverse, center, middle
 
 # Data
 
-**Overview:**
-- Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.
+**Dataset overview:**
+- Student-level data from the PISA 2025 Student Questionnaire (OECD)
+- 755,721 students · 90 countries and economies · 24 variables
+- Used to examine the link between family background and mathematics achievement
+- Citation: OECD (n.d.) *PISA 2025 Student Questionnaire*. Retrieved [date]
 
-**Data processing:** 
-- **Size:** 755,721 students from 90 countries/regions (747,068 used in visualization, 350,769 used in our 2 linear models)
-- **Explanatory variables:** Highest education of parents in years, Parental occupation, Home ICT resources
+---
+
+- **Data file only:** the questionnaire was set aside
+- **Check:** `summary()` in R → missing values identified
+- **Exclude:** Uzbekistan (all records) and Belgium (one record); their mathematics scores were missing, so 8,653 records went and 747,068 remain
+- **Combine:** `rowMeans()` of the ten scores → `math_score`, ten original columns removed
+- **Select:** mathematics scores, parental education, parental occupational status, home ICT resources
+- **Remaining missing values:** excluded as each visualisation or analysis needs them, so no analysis loses rows it does not use
+
+Result strip:`student_math` 755,721 × 24 → `student_processed` 747,068 × 12
+   
 ---
 
 class: inverse, center, middle
@@ -141,30 +174,6 @@ ggplot(student_processed, aes(x = math_score)) +
     bins = 50,
     fill = "steelblue",
     color = "white"
-  ) +
-  geom_vline(
-    xintercept = ci,
-    color = "#D98282",
-    linetype = "dashed",
-    linewidth = 1
-  ) +
-  annotate(
-    "text",
-    x = ci[1],
-    y = Inf,
-    label = paste0("2.5%: ", round(ci[1], 2)),
-    color = "#D98282",
-    vjust = 1.5,
-    size = 3.5
-  ) +
-  annotate(
-    "text",
-    x = ci[2],
-    y = Inf,
-    label = paste0("97.5%: ", round(ci[2], 2)),
-    color = "#D98282",
-    vjust = 1.5,
-    size = 3.5
   ) +
   labs(
     title = "Distribution of Mathematics Scores",
@@ -235,12 +244,23 @@ ggplot(
     y = math_score
   )
 ) +
-  geom_hex(bins = 50) +
-  scale_fill_gradient(
-    low = "#EFF6FB",
-    high = "#20577F",
-    trans = "log10",
-    name = "Number of students"
+  geom_hex(bins = 100) +
+  scale_fill_gradientn(
+  colours = c(
+    "#E2E3FF",
+    "#5968E8",
+    "#1049F8",
+    "#171D85"
+  ),
+  trans = "log10",
+  name = "Number of students"
+) +
+    geom_smooth(
+  method = "lm",
+  formula = y ~ x,
+  colour = "#C065EE",
+  linewidth = 0.7,
+  se = TRUE
 )+
   labs(
     title = "Parental Occupational Status and Mathematics Achievement",
@@ -355,6 +375,7 @@ scale_y_discrete(labels = c(
 ```
 
 ---
+The estimated regression model is:
 
 ```{r, echo=FALSE}
 # linear regression
@@ -367,10 +388,21 @@ model <- linear_reg() |>
     home_ict_resources,
   data = student_processed
 )
-summary(model$fit)
+lm_model <- model$fit
+
+# Display R-squared
+cat("\nR-squared:",
+    round(summary(lm_model)$r.squared, 3))
 ```
+$$\widehat{MathScore}_i =
+  {`r model$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i$$
 
 ---
+The estimated regression model is:
+
 
 ```{r, echo=FALSE}  
 # linear regression with country factor
@@ -383,22 +415,20 @@ model2 <- linear_reg() |>
     factor(country_code),
   data = student_processed
 )
-summary(model2$fit)
+lm_model2 <- model2$fit
+
+# Display R-squared
+cat("\nR-squared:",
+    round(summary(lm_model2)$r.squared, 3))
 
 ```
-
----
-
-# Math Expressions
-
-The estimated regression model is:
-
 $$\widehat{MathScore}_i =
   {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
   {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
   {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
   {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
   \alpha_{Country(i)}$$
+
 
 ---
 

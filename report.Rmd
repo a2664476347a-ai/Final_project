@@ -90,11 +90,31 @@ If you got your data off the web, make sure to state the retrieval date.
 
 ### Key variables
 
-介绍数学成绩、父母教育、职业地位和家庭 ICT 资源等变量。
+Our investigation focuses on three main factors that may be related to students' mathematics performance.
+
+Mathematics performance: math_score represents each student's mathematics performance.
+
+Parental education: We use parental_education_years to show the number of years of education completed by parents. We also kept highest_parental_education in the dataset.
+
+Parental occupational status: We use highest_parental_occupational_status to examine whether parents' occupational status is related to students' mathematics performance.
+
+Home ICT resources: We use home_ict_resources to represent the ICT resources available at home.
+
+Other variables, such as student age, gender, country, family socioeconomic status and home possessions, were also kept to provide more information about students' backgrounds.
 
 ### Data processing
 
-介绍缺失值处理、变量筛选和数学成绩计算。
+Our starting material came in two parts: the PISA 2025 data file and the student questionnaire. We worked from the data file only, so the questionnaire was set aside and everything below is based on the 755,721 student rows in `student_math`.
+
+We first used `summary()` in R to check the data and identify missing values. Mathematics scores were missing for two countries, so we excluded them: Uzbekistan (all of its records) and Belgium (one record). That took out 8,653 records, leaving 747,068 students.
+
+To make the data easier to use, we calculated the average of the ten mathematics scores for each student using `rowMeans()`. We created a new variable called `math_score` and then removed the original ten score columns.
+
+We then selected the variables needed for our research: mathematics scores, parental education, parental occupational status and home ICT resources.
+
+We did not remove all missing values from the other variables at this stage. Instead, we excluded missing observations when needed for individual visualisations and analyses, so that each analysis kept as many students as its own variables allowed, rather than losing rows it did not use.
+
+The table sets the processed data against the original file: `student_math` (755,721 rows, 24 variables) and `student_processed` (747,068 rows, 12 variables, after irrelevant variables were dropped and the ten plausible values became one `math_score`).
 
 ### Data citation
 The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.

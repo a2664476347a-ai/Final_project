@@ -96,30 +96,6 @@ ggplot(student_processed, aes(x = math_score)) +
     fill = "steelblue",
     color = "white"
   ) +
-  geom_vline(
-    xintercept = ci,
-    color = "#D98282",
-    linetype = "dashed",
-    linewidth = 1
-  ) +
-  annotate(
-    "text",
-    x = ci[1],
-    y = Inf,
-    label = paste0("2.5%: ", round(ci[1], 2)),
-    color = "#D98282",
-    vjust = 1.5,
-    size = 3.5
-  ) +
-  annotate(
-    "text",
-    x = ci[2],
-    y = Inf,
-    label = paste0("97.5%: ", round(ci[2], 2)),
-    color = "#D98282",
-    vjust = 1.5,
-    size = 3.5
-  ) +
   labs(
     title = "Distribution of Mathematics Scores",
     subtitle = "Central 95% of Mathematics Scores | PISA 2025",
@@ -185,12 +161,23 @@ ggplot(
     y = math_score
   )
 ) +
-  geom_hex(bins = 50) +
-  scale_fill_gradient(
-    low = "#EFF6FB",
-    high = "#20577F",
-    trans = "log10",
-    name = "Number of students"
+  geom_hex(bins = 100) +
+  scale_fill_gradientn(
+  colours = c(
+    "#E2E3FF",
+    "#5968E8",
+    "#1049F8",
+    "#171D85"
+  ),
+  trans = "log10",
+  name = "Number of students"
+) +
+    geom_smooth(
+  method = "lm",
+  formula = y ~ x,
+  colour = "#C065EE",
+  linewidth = 1,
+  se = TRUE
 )+
   labs(
     title = "Parental Occupational Status and Mathematics Achievement",
@@ -322,11 +309,9 @@ summary(model2$fit)
 
 The estimated regression model is:
 
-$$
-\widehat{MathScore}_i =
+$$\widehat{MathScore}_i =
   {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
   {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
   {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
   {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
-  \alpha_{Country(i)}
-$$
+  \alpha_{Country(i)$$
