@@ -175,11 +175,6 @@ class: alpha
 
 # Overall mathematics performance
 ```{r Visualising-overall, echo=FALSE, fig.asp=0.5}
-# Calculate the 2.5th and 97.5th percentiles
-ci <- quantile(
-  student_processed$math_score,
-  probs = c(0.025, 0.975)
-)
 # Find the tallest bar of the histogram (the peak)
 hist_data <- ggplot_build(
   ggplot(student_processed, aes(x = math_score)) +
@@ -206,7 +201,7 @@ ggplot(student_processed, aes(x = math_score)) +
     "text",
     x = peak$x,
     y = peak$count + 1500,
-    label = paste0("Peak: ", round(peak$xmin), "–", round(peak$xmax), " (about 45000 students)"),
+    label = paste0("Peak: ", round(peak$xmin), "–", round(peak$xmax)),
     color = "#00BFA5",
     vjust = 0,
     size = 3.5
