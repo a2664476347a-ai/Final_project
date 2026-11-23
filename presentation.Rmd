@@ -93,24 +93,35 @@ style_xaringan(
 ```
 
 ```{css, echo=FALSE}
-.toc-item{display: flex;
+.a{display: flex;
           align-items: baseline;
           margin-bottom: 1.5em;
 }
-.toc-dots{flex: 1;
+.b{flex: 1;
           border-bottom: 2px dotted #555;
           margin: 0 0.5em 0 0.5em
 
+}
+.alpha h1 {
+  margin-top: 0.1em;
+  margin-bottom: 0.6em;
+}
+.alpha p {
+  margin-top: 0.1em;
+  margin-bottom: 0.3em;
+}
+.beta h1 {
+  margin-bottom: 0.2em;
 }
 ```
 
 # Outline
 
-<div class="toc-item"><span>1. Research question</span><span class="toc-dots"></span><span>3</span></div>
-<div class="toc-item"><span>2. Data</span><span class="toc-dots"></span><span>4</span></div>
-<div class="toc-item"><span>3. Visualization</span><span class="toc-dots"></span><span>7</span></div>
-<div class="toc-item"><span>4. Findings and related discussion</span><span class="toc-dots"></span><span>12</span></div>
-<div class="toc-item"><span>5. Conclusions</span><span class="toc-dots"></span><span>?</span></div>
+<div class="a"><span>1. Research question</span><span class="b"></span><span>3</span></div>
+<div class="a"><span>2. Data</span><span class="b"></span><span>4</span></div>
+<div class="a"><span>3. Visualization</span><span class="b"></span><span>7</span></div>
+<div class="a"><span>4. Findings and related discussion</span><span class="b"></span><span>12</span></div>
+<div class="a"><span>5. Conclusions</span><span class="b"></span><span>?</span></div>
 
 ---
 
@@ -160,21 +171,47 @@ class: inverse, center, middle
 # Visualization
 
 ---
+class: alpha
 
 # Overall mathematics performance
-```{r Visualising-overall, echo=FALSE}
+```{r Visualising-overall, echo=FALSE, fig.asp=0.5}
 # Calculate the 2.5th and 97.5th percentiles
 ci <- quantile(
   student_processed$math_score,
   probs = c(0.025, 0.975)
 )
-
+# Find the tallest bar of the histogram (the peak)
+hist_data <- ggplot_build(
+  ggplot(student_processed, aes(x = math_score)) +
+    geom_histogram(bins = 50)
+)$data[[1]]
+peak <- hist_data[which.max(hist_data$count), ]
 ggplot(student_processed, aes(x = math_score)) +
-  geom_histogram(
+ geom_histogram(
     bins = 50,
     fill = "steelblue",
     color = "white"
   ) +
+  annotate(
+    "segment",
+    x = peak$x,
+    xend = peak$x,
+    y = 0,
+    yend = peak$count + 1500,
+    color = "#00BFA5",
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  annotate(
+    "text",
+    x = peak$x,
+    y = peak$count + 1500,
+    label = paste0("Peak: ", round(peak$xmin), "–", round(peak$xmax), " (about 45000 students)"),
+    color = "#00BFA5",
+    vjust = 0,
+    size = 3.5
+  ) +
+  expand_limits(y = 50000) +
   labs(
     title = "Distribution of Mathematics Scores",
     subtitle = "Central 95% of Mathematics Scores | PISA 2025",
@@ -184,19 +221,28 @@ ggplot(student_processed, aes(x = math_score)) +
   theme_minimal()
 ```
 
----
+Summary: Scores range from about 150 to 800, with a peak of about 45,000 students just below 400. The score distribution is roughly bell-shaped and symmetric, with most students clustered around the middle score range.
 
-```{r parental-education, echo=FALSE}
+---
+class: alpha, beta
+
+# Parental education and maths score
+
+```{r parental-education, echo=FALSE, fig.asp=0.5}
 #the relationship between parental education years and mathematics score
 # Prepare data
-education_data <- student_processed %>%
+education_data <- student_processed |> 
   drop_na(parental_education_years,
-    math_score) %>%
+    math_score) |> 
   mutate(
     parental_education = factor(
       as.numeric(parental_education_years)
     )
   )
+# Median mathematics score of each group
+medians <- education_data |>
+  group_by(parental_education) |>
+  summarise(median_score = median(math_score))
 
 
 # Violin plot
@@ -220,8 +266,15 @@ ggplot(
         colour = "#493A70",
         linewidth = 0.5
     ) +
+  geom_text(
+        data = medians,
+        aes(x = parental_education, y = median_score, label = round(median_score)),
+        inherit.aes = FALSE,
+        nudge_x = 0.3,
+        colour = "#493A70",
+        size = 3.5
+    ) +
     labs(
-        title = "Parental Education and Mathematics Performance",
         subtitle = "PISA 2025 Student Data",
         x = "Highest Education of Parents in Years",
         y = "Mathematics Score"
@@ -229,6 +282,8 @@ ggplot(
     coord_flip() +
     theme_minimal()
 ```
+
+Summary: Higher parental education years shift the score distribution upward; median maths score rises steadily from about 350 to 470, but within-group spread remains large.
 
 ---
 

@@ -43,24 +43,35 @@ class: center, middle, inverse, title-slide
 
 
 &lt;style type="text/css"&gt;
-.toc-item{display: flex;
+.a{display: flex;
           align-items: baseline;
           margin-bottom: 1.5em;
 }
-.toc-dots{flex: 1;
+.b{flex: 1;
           border-bottom: 2px dotted #555;
           margin: 0 0.5em 0 0.5em
 
+}
+.alpha h1 {
+  margin-top: 0.1em;
+  margin-bottom: 0.6em;
+}
+.alpha p {
+  margin-top: 0.1em;
+  margin-bottom: 0.3em;
+}
+.beta h1 {
+  margin-bottom: 0.2em;
 }
 &lt;/style&gt;
 
 # Outline
 
-&lt;div class="toc-item"&gt;&lt;span&gt;1. Research question&lt;/span&gt;&lt;span class="toc-dots"&gt;&lt;/span&gt;&lt;span&gt;3&lt;/span&gt;&lt;/div&gt;
-&lt;div class="toc-item"&gt;&lt;span&gt;2. Data&lt;/span&gt;&lt;span class="toc-dots"&gt;&lt;/span&gt;&lt;span&gt;4&lt;/span&gt;&lt;/div&gt;
-&lt;div class="toc-item"&gt;&lt;span&gt;3. Visualization&lt;/span&gt;&lt;span class="toc-dots"&gt;&lt;/span&gt;&lt;span&gt;7&lt;/span&gt;&lt;/div&gt;
-&lt;div class="toc-item"&gt;&lt;span&gt;4. Findings and related discussion&lt;/span&gt;&lt;span class="toc-dots"&gt;&lt;/span&gt;&lt;span&gt;12&lt;/span&gt;&lt;/div&gt;
-&lt;div class="toc-item"&gt;&lt;span&gt;5. Conclusions&lt;/span&gt;&lt;span class="toc-dots"&gt;&lt;/span&gt;&lt;span&gt;?&lt;/span&gt;&lt;/div&gt;
+&lt;div class="a"&gt;&lt;span&gt;1. Research question&lt;/span&gt;&lt;span class="b"&gt;&lt;/span&gt;&lt;span&gt;3&lt;/span&gt;&lt;/div&gt;
+&lt;div class="a"&gt;&lt;span&gt;2. Data&lt;/span&gt;&lt;span class="b"&gt;&lt;/span&gt;&lt;span&gt;4&lt;/span&gt;&lt;/div&gt;
+&lt;div class="a"&gt;&lt;span&gt;3. Visualization&lt;/span&gt;&lt;span class="b"&gt;&lt;/span&gt;&lt;span&gt;7&lt;/span&gt;&lt;/div&gt;
+&lt;div class="a"&gt;&lt;span&gt;4. Findings and related discussion&lt;/span&gt;&lt;span class="b"&gt;&lt;/span&gt;&lt;span&gt;12&lt;/span&gt;&lt;/div&gt;
+&lt;div class="a"&gt;&lt;span&gt;5. Conclusions&lt;/span&gt;&lt;span class="b"&gt;&lt;/span&gt;&lt;span&gt;?&lt;/span&gt;&lt;/div&gt;
 
 ---
 
@@ -110,13 +121,21 @@ class: inverse, center, middle
 # Visualization
 
 ---
+class: alpha
 
 # Overall mathematics performance
 &lt;img src="presentation_files/figure-html/Visualising-overall-1.png" alt="" width="80%" /&gt;
 
+Summary: Scores range from about 150 to 800, with a peak of about 45,000 students just below 400. The score distribution is roughly bell-shaped and symmetric, with most students clustered around the middle score range.
+
 ---
+class: alpha, beta
+
+# Parental education and maths score
 
 &lt;img src="presentation_files/figure-html/parental-education-1.png" alt="" width="80%" /&gt;
+
+Summary: Higher parental education years shift the score distribution upward; median maths score rises steadily from about 350 to 470, but within-group spread remains large.
 
 ---
 
