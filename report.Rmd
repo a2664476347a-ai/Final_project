@@ -137,42 +137,60 @@ As a preliminary analysis, we used the processed dataset to visualize the distri
 ### **Figure 1**
 
 ```{r echo=FALSE}
-# Calculate the 2.5th and 97.5th percentiles
-ci <- quantile(
-  student_processed$math_score,
-  probs = c(0.025, 0.975)
-)
-
+hist_data <- ggplot_build(
+  ggplot(student_processed, aes(x = math_score)) +
+    geom_histogram(bins = 50)
+)$data[[1]]
+peak <- hist_data[which.max(hist_data$count), ]
+# Mean mathematics score
+mean_score <- mean(student_processed$math_score, na.rm = TRUE)
 ggplot(student_processed, aes(x = math_score)) +
-  geom_histogram(
+ geom_histogram(
     bins = 50,
     fill = "steelblue",
     color = "white"
   ) +
-  geom_vline(
-    xintercept = ci,
-    color = "#D98282",
+  annotate(
+    "segment",
+    x = peak$x,
+    xend = peak$x,
+    y = 0,
+    yend = peak$count + 4000,
+    color = "#15e6ed",
     linetype = "dashed",
-    linewidth = 1
+    linewidth = 0.8
   ) +
   annotate(
     "text",
-    x = ci[1],
-    y = Inf,
-    label = paste0("2.5%: ", round(ci[1], 2)),
-    color = "#D98282",
-    vjust = 1.5,
+    x = peak$x - 5,
+    y = peak$count + 1500,
+    label = paste0("Peak: ", round(peak$xmin), "–", round(peak$xmax)),
+    color = "#15e6ed",
+    hjust = 1,
+    vjust = 0,
     size = 3.5
   ) +
   annotate(
+    "segment",
+    x = mean_score,
+    xend = mean_score,
+    y = 0,
+    yend = peak$count + 4000,
+    color = "#ff7dda",
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  annotate(
     "text",
-    x = ci[2],
-    y = Inf,
-    label = paste0("97.5%: ", round(ci[2], 2)),
-    color = "#D98282",
-    vjust = 1.5,
+    x = mean_score + 5,
+    y = peak$count + 1500,
+    label = paste0("Mean: ", round(mean_score, 1)),
+    color = "#ff7dda",
+    hjust = 0,
+    vjust = 0,
     size = 3.5
   ) +
+  expand_limits(y = 50000) +
   labs(
     title = "Distribution of Mathematics Scores",
     subtitle = "Central 95% of Mathematics Scores | PISA 2025",
@@ -198,14 +216,18 @@ Figure 2 shows a visualization of distribution of mathematics scores across thes
 ```{r parental_education, echo=FALSE}
 #the relationship between parental education years and mathematics score
 # Prepare data
-education_data <- student_processed %>%
+education_data <- student_processed |> 
   drop_na(parental_education_years,
-    math_score) %>%
+    math_score) |> 
   mutate(
     parental_education = factor(
       as.numeric(parental_education_years)
     )
   )
+# Median mathematics score of each group
+medians <- education_data |>
+  group_by(parental_education) |>
+  summarise(median_score = median(math_score))
 
 
 # Violin plot
@@ -229,8 +251,17 @@ ggplot(
         colour = "#493A70",
         linewidth = 0.5
     ) +
+  geom_label(
+        data = medians,
+        aes(x = parental_education, y = median_score, label = round(median_score)),
+        inherit.aes = FALSE,
+        nudge_x = 0.3,
+        colour = "#493A70",
+        fill = alpha("white", 0.7),
+        border.colour = NA,
+        size = 3.5
+    ) +
     labs(
-        title = "Parental Education and Mathematics Performance",
         subtitle = "PISA 2025 Student Data",
         x = "Highest Education of Parents in Years",
         y = "Mathematics Score"
@@ -271,15 +302,19 @@ ggplot(
   trans = "log10",
   name = "Number of students"
 ) +
+  geom_density_2d(
+    colour = "#f08cff",
+    bins = 6,
+    linewidth = 0.5
+  ) +
     geom_smooth(
   method = "lm",
   formula = y ~ x,
-  colour = "#C065EE",
-  linewidth = 1,
+  colour = "#72eef7",
+  linewidth = 0.7,
   se = TRUE
 )+
   labs(
-    title = "Parental Occupational Status and Mathematics Achievement",
     x = "Family Highest Occupational grade",
     y = "Mathematics score"
   ) +
@@ -299,7 +334,13 @@ The third variable we explored was home ICT resources, representing the relative
 clean_data <- student_processed |>
      filter(
          is.finite(home_ict_resources)
-     ) 
+     )
+# Find the highest point of the GAM curve (the peak)
+smooth_data <- ggplot_build(
+    ggplot(clean_data, aes(x = home_ict_resources, y = math_score)) +
+        geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"))
+)$data[[1]]
+ict_peak <- smooth_data[which.max(smooth_data$y), ]
  ggplot(
     clean_data,
     aes(x = home_ict_resources, y = math_score)
@@ -315,10 +356,18 @@ clean_data <- student_processed |>
     geom_smooth(
     method = "gam",
     colour = "skyblue",
-    linewidth = 1.1
+    linewidth = 1.1, 
+    formula = y ~ s(x, bs = "cs")
+    
 )+
+    annotate(
+        "point",
+        x = ict_peak$x,
+        y = ict_peak$y,
+        colour = "#b88be8",
+        size = 3
+    ) +
     labs(
-        title = "Home ICT Resources and Mathematics score",
         x = "Home ICT Resources Index",
         y = "Mean Mathematics score in each class"
     ) +
@@ -334,19 +383,6 @@ clean_data <- student_processed |>
 
 The most significant limitation of the data across variables was its student-reported nature: for example, students were expected to report their parents' highest level of education. However, past studies conducted on previous iterations of PISA, in which parents were also asked to report their education levels (this was not a part of the 2025 questionnaires), found large discrepancies between student and parents' responses (Jerrim et al., 2024).
 
-*This is a template; you can use it if you're at a loss for ideas(by Junyi).*
-###Overall mathematics performance
-
-###Describe graphs
-####Parental education and mathematics performance
-
-####Parental occupational status and mathematics performance
-
-####Home ICT resources and mathematics performance
-
-###Correlation and regression analysis
-
-###Discussion
 
 ###conclusion
 
