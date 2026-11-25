@@ -88,7 +88,8 @@ student_processed <- student_processed |>
 
 #Background image
 style_xaringan(
-  title_slide_background_image = "img/confetti.jpg"
+  title_slide_background_image = "img/confetti.jpg",
+  header_h1_font_size = "2rem"
 )
 ```
 
@@ -112,6 +113,30 @@ style_xaringan(
 }
 .beta h1 {
   margin-bottom: 0.2em;
+}
+.plot-l {
+  float: left;
+  width: 70%;
+}
+.note-r {
+  float: right;
+  width: 28%;
+  position: relative;
+  left: +0.9em;
+}
+.note-r + * {
+  clear: both;
+}
+.note-r p {
+  margin-bottom: 1.5em;
+}
+.gap {
+  display: block;
+  margin-top: 0.9em;
+}
+.gap2 {
+  display: block;
+  margin-top: 2em;
 }
 ```
 
@@ -181,6 +206,8 @@ hist_data <- ggplot_build(
     geom_histogram(bins = 50)
 )$data[[1]]
 peak <- hist_data[which.max(hist_data$count), ]
+# Mean mathematics score
+mean_score <- mean(student_processed$math_score, na.rm = TRUE)
 ggplot(student_processed, aes(x = math_score)) +
  geom_histogram(
     bins = 50,
@@ -192,17 +219,38 @@ ggplot(student_processed, aes(x = math_score)) +
     x = peak$x,
     xend = peak$x,
     y = 0,
-    yend = peak$count + 1500,
-    color = "#00BFA5",
+    yend = peak$count + 4000,
+    color = "#15e6ed",
     linetype = "dashed",
     linewidth = 0.8
   ) +
   annotate(
     "text",
-    x = peak$x,
+    x = peak$x - 5,
     y = peak$count + 1500,
     label = paste0("Peak: ", round(peak$xmin), "–", round(peak$xmax)),
-    color = "#00BFA5",
+    color = "#15e6ed",
+    hjust = 1,
+    vjust = 0,
+    size = 3.5
+  ) +
+  annotate(
+    "segment",
+    x = mean_score,
+    xend = mean_score,
+    y = 0,
+    yend = peak$count + 4000,
+    color = "#ff7dda",
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  annotate(
+    "text",
+    x = mean_score + 5,
+    y = peak$count + 1500,
+    label = paste0("Mean: ", round(mean_score, 1)),
+    color = "#ff7dda",
+    hjust = 0,
     vjust = 0,
     size = 3.5
   ) +
@@ -216,13 +264,13 @@ ggplot(student_processed, aes(x = math_score)) +
   theme_minimal()
 ```
 
-Summary: Scores range from about 150 to 800, with a peak of about 45,000 students just below 400. The score distribution is roughly bell-shaped and symmetric, with most students clustered around the middle score range.
+Summary: Scores range from about 150 to 800, with a mean of 432.5 and a peak of about 45,000 students just below 400. The score distribution is roughly bell-shaped and symmetric, with most students clustered around the middle score range.
 
 ---
 class: alpha, beta
 
 # Parental education and maths score
-
+.gap[
 ```{r parental-education, echo=FALSE, fig.asp=0.5}
 #the relationship between parental education years and mathematics score
 # Prepare data
@@ -261,12 +309,14 @@ ggplot(
         colour = "#493A70",
         linewidth = 0.5
     ) +
-  geom_text(
+  geom_label(
         data = medians,
         aes(x = parental_education, y = median_score, label = round(median_score)),
         inherit.aes = FALSE,
         nudge_x = 0.3,
         colour = "#493A70",
+        fill = alpha("white", 0.7),
+        border.colour = NA,
         size = 3.5
     ) +
     labs(
@@ -277,12 +327,17 @@ ggplot(
     coord_flip() +
     theme_minimal()
 ```
-
-Summary: Higher parental education years shift the score distribution upward; median maths score rises steadily from about 350 to 470, but within-group spread remains large.
+]
+.gap[Summary: Higher parental education years shift the score distribution upward; median maths score rises steadily from about 350 to 470, but within-group spread remains large.]
 
 ---
 
-```{r, echo=FALSE}
+class: alpha, beta
+
+# Parental occupational status and mathematics score
+
+.plot-l[
+```{r, echo=FALSE, fig.asp=0.5, out.width="100%"}
 #the relationship between highest parental occupational status and mathematics scores
 student_processed|>
 filter(
@@ -305,29 +360,55 @@ ggplot(
   trans = "log10",
   name = "Number of students"
 ) +
+  geom_density_2d(
+    colour = "#f08cff",
+    bins = 6,
+    linewidth = 0.5
+  ) +
     geom_smooth(
   method = "lm",
   formula = y ~ x,
-  colour = "#C065EE",
+  colour = "#72eef7",
   linewidth = 0.7,
   se = TRUE
 )+
   labs(
-    title = "Parental Occupational Status and Mathematics Achievement",
     x = "Family Highest Occupational grade",
     y = "Mathematics score"
   ) +
   theme_minimal()
 ```
+]
+
+.note-r[<br>
+.gap[**Pink contours**<br>
+.gap[Where students are most concentrated]
+.gap[Inner rings show higher density]]
+
+.gap2[**Cyan line**<br>
+.gap[Linear trend]]
+]
+
+<br>Summary: A weak positive trend appears — higher occupational status tends to pair with slightly higher scores — but scores spread widely at every status level, and the densest cluster sits in the middle range.
 
 ---
 
-```{r, echo=FALSE}
+class: alpha, beta
+
+# Home ICT resources and mathematics score
+.plot-l[.gap2[
+```{r, echo=FALSE, fig.asp=0.5,out.width="100%"}
 #the relationship between ICT and mathematics score
 clean_data <- student_processed |>
      filter(
          is.finite(home_ict_resources)
-     ) 
+     )
+# Find the highest point of the GAM curve (the peak)
+smooth_data <- ggplot_build(
+    ggplot(clean_data, aes(x = home_ict_resources, y = math_score)) +
+        geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"))
+)$data[[1]]
+ict_peak <- smooth_data[which.max(smooth_data$y), ]
  ggplot(
     clean_data,
     aes(x = home_ict_resources, y = math_score)
@@ -347,14 +428,34 @@ clean_data <- student_processed |>
     formula = y ~ s(x, bs = "cs")
     
 )+
+    annotate(
+        "point",
+        x = ict_peak$x,
+        y = ict_peak$y,
+        colour = "#b88be8",
+        size = 3
+    ) +
     labs(
-        title = "Home ICT Resources and Mathematics score",
         x = "Home ICT Resources Index",
         y = "Mean Mathematics score in each class"
     ) +
     theme_minimal()
 
 ```
+]]
+
+.note-r[<br>
+.gap[**Pink points**<br>
+.gap[Mean score in each narrow ICT interval]]
+
+.gap2[**Blue line**<br>
+.gap[Smoothed trend]]
+
+.gap2[**Purple dot**<br>
+.gap[Peak, ICT ≈ `r round(ict_peak$x, 1)`]]
+]
+
+.gap2[Summary: The relationship is an inverted-U: average scores rise to a peak near ICT = 0.9, then slowly decline, so extra ICT beyond this level no longer links to higher scores.]
 ---
 
 class: inverse, center, middle
