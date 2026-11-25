@@ -179,13 +179,13 @@ class: inverse, center, middle
 - Citation: OECD (n.d.) *PISA 2025 Student Questionnaire*. Retrieved [date]
 
 ---
-
-- **Data file only:** the questionnaire was set aside
-- **Check:** `summary()` in R → missing values identified
-- **Exclude:** Uzbekistan (all records) and Belgium (one record); their mathematics scores were missing, so 8,653 records went and 747,068 remain
-- **Combine:** `rowMeans()` of the ten scores → `math_score`, ten original columns removed
-- **Select:** mathematics scores, parental education, parental occupational status, home ICT resources
-- **Remaining missing values:** excluded as each visualisation or analysis needs them, so no analysis loses rows it does not use
+**Data Processing**
+- Data file only: the questionnaire was set aside
+- Check: `summary()` in R → missing values identified
+- Exclude: Uzbekistan (all records) and Belgium (one record); their mathematics scores were missing, so 8,653 records went and 747,068 remain
+- Combine: `rowMeans()` of the ten scores → `math_score`, ten original columns removed
+- Select: mathematics scores, parental education, parental occupational status, home ICT resources
+- Remaining missing values: excluded as each visualisation or analysis needs them, so no analysis loses rows it does not use
 
 Result strip:`student_math` 755,721 × 24 → `student_processed` 747,068 × 12
    
