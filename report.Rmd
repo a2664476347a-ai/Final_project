@@ -15,6 +15,7 @@ library(tidyverse)
 library(tidymodels)
 library(learningtower)
 library(haven)
+library(rmdwc)
 # Add any other libraries here
 
 
@@ -76,7 +77,9 @@ score_stats <- student_processed %>%
 ```
 
 
-## Research Question
+## Introduction
+
+### Research Question
 
 **Question**: 
 *How are parental education, parental occupational status, and home ICT resources associated with students’ mathematics performance in PISA 2025?*
@@ -87,6 +90,8 @@ score_stats <- student_processed %>%
 ### Dataset overview
 
 *This investigation uses student-level data from the PISA 2025 Student Questionnaire, published by the Organisation for Economic Co-operation and Development (OECD). The dataset contains information on students' backgrounds and mathematics performance, allowing us to investigate the associations between family circumstances and academic achievement (OECD, n.d.).*
+
+## Methods
 
 ### Key variables
 
@@ -119,7 +124,7 @@ The table sets the processed data against the original file: `student_math` (755
 ### Data citation
 The dataset was retrieved on 28 October 2026 from the OECD PISA 2025 database: https://webfs.oecd.org/pisa2022/index.html.
 
-## Analysis
+## Results
 
 Of the 755,721 students included in the questionnaire dataset, 747,068 remained after removing those whose mathematics scores were missing. In turn, this dropped the number of represented countries in the dataset from 90 to 89, as Uzbekistan ('UZB')'s mathematics scores are completely missing. According to the official results report, both mathematics and reading scores were omitted for Uzbekistan due to "a number of inconsistencies ... that require further investigation" (OECD, 2026). These account for 8562 of the removed rows, and the remaining one corresponds to a Belgian ('BEL') student whose mathematics scores are also missing (Student ID 05608066).
 
@@ -461,6 +466,7 @@ model2 <- linear_reg() |>
 summary(model2$fit)
 ```
 
+### **Multiple linear regression**
 We chose a multiple linear regression model, since there are multiple predictors and the outcome (mathematics score) is a continuous numerical variable. As stated above, we chose to use all three of the variables we analyzed as predictors due to their significant correlation with mathematics performance: highest education of parents in years, home ICT resources index, and family highest occupation grade. Running a simple ordinary least squares model, we obtained the following model equation:
 
 $$\widehat{MathScore}_i =
@@ -487,12 +493,15 @@ However, to compare the two linear models properly, we must use adjusted r-squar
 The first model (without the country predictor) had an adjusted r-squared of `r glance(model)$adj.r.squared %>% sprintf(fmt='%.4f')`, while the second (with the country predictor) had an adjusted r-squared of `r glance(model2)$adj.r.squared %>% sprintf(fmt='%.4f')`. This indicates that adding the country variable as a predictor heavily improved the prediction capabilities of the model.
 
 
-#### Limitations
+## Discussion
+
+
+## Limitations
 
 The most significant limitation of the data in terms of its suitability for analysis was its student-reported nature: for example, students were expected to report their parents' highest level of education. However, past studies conducted on previous iterations of PISA, in which parents were also asked to report their education levels (this was not a part of the 2025 questionnaires), found large discrepancies between student and parents' responses (Jerrim et al., 2024). Since parents' self-reported level of education is not included in PISA 2025, it is not possible to identify to what extent this affected the dataset.
 
 
-### Conclusion
+## Conclusion
 Our original research question was investigating how the explanatory variables of parental education, parental occupational status, and home ICT resources are associated with students’ mathematics performance in PISA 2025. Via data visualizations and correlation analysis, we identified a significant positive association between each of the three variables and mathematics score. Consequently, we were able to create a predictive model for the outcome of mathematics score using multiple linear regression, and further improved significantly upon the resulting model by adding country as a categorical predictor (and thus took advantage of the data set's international scope). Despite certain limitations of the dataset, our analyses support the conclusion in response to our research question that parental education, parental occupational status, and home ICT resources are positively correlated with mathematics performance in PISA 2025, and, furthermore, that these relationships have the potential to be used in predictive modelling.
 
 
@@ -503,5 +512,6 @@ Jerrim, J. & Zieger, L. (2024). How robust are socio-economic achievement gradie
 OECD. (n.d.). *PISA 2025 student questionnaire data file* [Data set]. Retrieved October 28, 2026, from https://webfs.oecd.org/pisa2022/index.html
 
 OECD (2026), PISA 2025 Results (Volume I): Future-Ready Students, PISA, OECD Publishing, Paris, https://doi.org/10.1787/73451bc5-en. 
+
 
 
