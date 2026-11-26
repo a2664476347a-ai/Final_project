@@ -78,21 +78,12 @@ score_stats <- student_processed %>%
 
 ## Research Question
 
-Describe your research question here. Include why this question might be of interest. 
-
 **Question**: 
 *How are parental education, parental occupational status, and home ICT resources associated with students’ mathematics performance in PISA 2025?*
 
 **Why**:
 *Students' home environments may play an important role in their educational outcomes. Differences in parental education, occupational status, and access to ICT resources may be associated with students' opportunities to learn and their mathematics performance. Investigating these relationships can help us better understand how family background relates to educational achievement.*
 
-
-## Data
-
-Briefly describe your dataset here - include a description of the key variables you will be investigating. 
-Include a citation for your data. 
-See http://libraryguides.vu.edu.au/c.php?g=386501&p=4347840 for guidance on proper citation for datasets. 
-If you got your data off the web, make sure to state the retrieval date.
 ### Dataset overview
 
 *This investigation uses student-level data from the PISA 2025 Student Questionnaire, published by the Organisation for Economic Co-operation and Development (OECD). The dataset contains information on students' backgrounds and mathematics performance, allowing us to investigate the associations between family circumstances and academic achievement (OECD, n.d.).*
@@ -378,15 +369,131 @@ ict_peak <- smooth_data[which.max(smooth_data$y), ]
 *Note.* This figure shows a binned scatter plot (mean mathematics score plotted for each of 1000 home ICT resources index bins) with a GAM smoothing line shown in blue.
 
 
+In order to obtain a more concrete and numerical picture of the relationships between each of these three variables and mathematics score, we calculated their (Pearson) correlation coefficients, as seen in Figure 5. As we predicted from the previous figures, each of the variables has positive correlation with the mathematics score. The parental occupation was calculated to have the highest correlation coefficient, followed by home ICT resources and then highest parental education, though they are all quite close together, ranging from 0.33 to 0.36. Since all three correlation coefficients were greater than 0.30, we concluded that moderately strong correlations exist between each of the variables and mathematics score, confirming their potential to be used as predictors to model mathematics score.
 
-### Limitations
+### **Figure 5**
 
-The most significant limitation of the data across variables was its student-reported nature: for example, students were expected to report their parents' highest level of education. However, past studies conducted on previous iterations of PISA, in which parents were also asked to report their education levels (this was not a part of the 2025 questionnaires), found large discrepancies between student and parents' responses (Jerrim et al., 2024).
+```{r heatmap, echo=FALSE}
+#correlation between conditions and math performance
+correlation_data <- student_processed |>
+    select(
+        math_score,
+        highest_parental_occupational_status,
+        parental_education_years,
+        home_ict_resources
+    )
+
+correlation_values <- correlation_data |>
+    summarise(
+        across(
+            -math_score,
+            ~ cor(.x, math_score, use = "complete.obs")
+        )
+    ) |>
+    pivot_longer(
+        everything(),
+        names_to = "Variable",
+        values_to = "Correlation"
+    )
+ggplot(
+    correlation_values,
+    aes(
+        x = "Mathematics Score",
+        y = Variable,
+        fill = Correlation
+    )
+) +
+    geom_tile(
+        colour = "black",
+        linewidth = 0.8
+    ) +
+    geom_text(
+        aes(label = round(Correlation, 2)),
+        size = 4
+    ) +
+    scale_fill_gradient2(
+        low = "#2878B5",
+        mid = "white",
+        high = "#D65F73",
+        midpoint = 0,
+        limits = c(-1, 1),
+        name = "Correlation"
+    ) +
+    labs(
+        title = "Correlation with Mathematics Performance",
+        subtitle = "PISA 2025 Student Data",
+        x = NULL,
+        y = NULL
+    ) +
+    theme_minimal()+
+scale_y_discrete(labels = c(
+    "highest_parental_occupational_status" = "Parental occupation",
+    "parental_education_years" = "Highest education of parents in years",
+    "home_ict_resources" = "Home ICT resources"
+))
+
+```
+
+*Note.* This figure shows a correlation heat map for each of the three chosen variables with mathematics score.
+
+```{r, include=FALSE}
+# linear regression
+
+model <- linear_reg() |>
+  set_engine("lm") |>
+  fit(
+    math_score ~ highest_parental_occupational_status +
+    parental_education_years +
+    home_ict_resources,
+  data = student_processed
+)
+summary(model$fit)
+# linear regression with country factor
+model2 <- linear_reg() |>
+  set_engine("lm") |>
+  fit(
+    math_score ~ highest_parental_occupational_status +
+    parental_education_years +
+    home_ict_resources +
+    factor(country_code),
+  data = student_processed
+)
+summary(model2$fit)
+```
+
+We chose a multiple linear regression model, since there are multiple predictors and the outcome (mathematics score) is a continuous numerical variable. As stated above, we chose to use all three of the variables we analyzed as predictors due to their significant correlation with mathematics performance: highest education of parents in years, home ICT resources index, and family highest occupation grade. Running a simple ordinary least squares model, we obtained the following model equation:
+
+$$\widehat{MathScore}_i =
+  {`r model$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i,$$
+
+with a multiple R-squared value of `r glance(model)$r.squared %>% sprintf(fmt='%.4f')`. This means that this linear regression model explains about `r glance(model)$r.squared %>% label_percent(accuracy=0.01)()` of variability in mathematics scores, which is quite low.
+
+To improve on this, we chose to added another predictor to the model: since PISA 2025 is intended to investigate the education of students across many countries around the world, we added country as a categorical predictor to the multiple linear regression model, obtaining the following equation:
+
+$$\widehat{MathScore}_i =
+  {`r model2$fit$coefficients[["(Intercept)"]] %>% sprintf(fmt='%.2f')`} +
+  {`r model2$fit$coefficients[["highest_parental_occupational_status"]] %>% sprintf(fmt='%.2f')`} \times Occupation_i +
+  {`r model2$fit$coefficients[["parental_education_years"]] %>% sprintf(fmt='%.2f')`} \times Education_i +
+  {`r model2$fit$coefficients[["home_ict_resources"]] %>% sprintf(fmt='%.2f')`} \times ICT_i +
+  \alpha_{Country(i)},$$
+
+with a multiple R-squared value of `r glance(model2)$r.squared %>% sprintf(fmt='%.4f')`. This means that this updated multiple linear regression model explains about `r glance(model2)$r.squared %>% label_percent(accuracy=0.01)()` of variability in mathematics scores.
+
+However, to compare the two linear models properly, we must use adjusted r-squared instead, since the normal r-squared typically increases when predictors are added. 
+
+The first model (without the country predictor) had an adjusted r-squared of `r glance(model)$adj.r.squared %>% sprintf(fmt='%.4f')`, while the second (with the country predictor) had an adjusted r-squared of `r glance(model2)$adj.r.squared %>% sprintf(fmt='%.4f')`. This indicates that adding the country variable as a predictor heavily improved the prediction capabilities of the model.
 
 
-###conclusion
+#### Limitations
+
+The most significant limitation of the data in terms of its suitability for analysis was its student-reported nature: for example, students were expected to report their parents' highest level of education. However, past studies conducted on previous iterations of PISA, in which parents were also asked to report their education levels (this was not a part of the 2025 questionnaires), found large discrepancies between student and parents' responses (Jerrim et al., 2024). Since parents' self-reported level of education is not included in PISA 2025, it is not possible to identify to what extent this affected the dataset.
 
 
+### Conclusion
+Our original research question was investigating how the explanatory variables of parental education, parental occupational status, and home ICT resources are associated with students’ mathematics performance in PISA 2025. Via data visualizations and correlation analysis, we identified a significant positive association between each of the three variables and mathematics score. Consequently, we were able to create a predictive model for the outcome of mathematics score using multiple linear regression, and further improved significantly upon the resulting model by adding country as a categorical predictor (and thus took advantage of the data set's international scope). Despite certain limitations of the dataset, our analyses support the conclusion in response to our research question that parental education, parental occupational status, and home ICT resources are positively correlated with mathematics performance in PISA 2025, and, furthermore, that these relationships have the potential to be used in predictive modelling.
 
 
 ## References
