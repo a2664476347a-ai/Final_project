@@ -5,7 +5,7 @@ This is a template repository for your group project. One of your group members 
 ## Team members
 
 - Junyi Mai (s2814883), a2664476347a-ai
--
+- Yachen Wang(s3011184), Yachen-ui
 - 
 - 
 - 
