@@ -6,9 +6,9 @@ This is a template repository for your group project. One of your group members 
 
 - Junyi Mai (s2814883), a2664476347a-ai
 - Yachen Wang(s3011184), Yachen-ui
-- 
-- 
-- 
+- Qiyu Pang(s2959804),Pang-Qiyu
+- Ziqiao Zhou (S3045544), lntani
+- Ali Hamzeh (s2790923), AliH27
 
 ## Repository structure
 
